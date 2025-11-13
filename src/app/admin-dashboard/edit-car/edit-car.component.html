@@ -1,0 +1,86 @@
+<div class="edit-car-container">
+  <div class="form-card">
+    <div class="form-header">
+      <button class="btn btn-secondary back-btn" (click)="goBack()">
+        <i class="fas fa-arrow-right"></i> {{ 'common.back' | translate }}
+      </button>
+      <h2>{{ 'carForm.editCarTitle' | translate }}</h2>
+    </div>
+
+    <form [formGroup]="carForm" (ngSubmit)="onSubmit()" class="car-form">
+      <div class="form-group">
+        <label for="brand">{{ 'carForm.brand' | translate }}</label>
+        <input
+          id="brand"
+          type="text"
+          formControlName="brand"
+          class="form-control"
+          [class.is-invalid]="carForm.get('brand')?.invalid && carForm.get('brand')?.touched"
+        />
+        <div class="invalid-feedback" *ngIf="carForm.get('brand')?.invalid && carForm.get('brand')?.touched">
+          {{ 'carForm.brandRequired' | translate }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="model">{{ 'carForm.model' | translate }}</label>
+        <input
+          id="model"
+          type="text"
+          formControlName="model"
+          class="form-control"
+          [class.is-invalid]="carForm.get('model')?.invalid && carForm.get('model')?.touched"
+        />
+        <div class="invalid-feedback" *ngIf="carForm.get('model')?.invalid && carForm.get('model')?.touched">
+          {{ 'carForm.modelRequired' | translate }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="plateNumber">{{ 'carForm.plate' | translate }}</label>
+        <input
+          id="plateNumber"
+          type="text"
+          formControlName="plateNumber"
+          class="form-control"
+          [class.is-invalid]="carForm.get('plateNumber')?.invalid && carForm.get('plateNumber')?.touched"
+        />
+        <div class="invalid-feedback" *ngIf="carForm.get('plateNumber')?.invalid && carForm.get('plateNumber')?.touched">
+          {{ 'carForm.plateRequired' | translate }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="pricePerDay">{{ 'carForm.price' | translate }}</label>
+        <input
+          id="pricePerDay"
+          type="number"
+          formControlName="pricePerDay"
+          class="form-control"
+          [class.is-invalid]="carForm.get('pricePerDay')?.invalid && carForm.get('pricePerDay')?.touched"
+        />
+        <div class="invalid-feedback" *ngIf="carForm.get('pricePerDay')?.invalid && carForm.get('pricePerDay')?.touched">
+          <span *ngIf="carForm.get('pricePerDay')?.errors?.['required']">{{ 'carForm.priceRequired' | translate }}</span>
+          <span *ngIf="carForm.get('pricePerDay')?.errors?.['min']">{{ 'carForm.priceMin' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            formControlName="available"
+            class="form-check-input"
+          />
+          <span class="checkmark"></span>
+          {{ 'carForm.available' | translate }}
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary submit-btn" [disabled]="isLoading">
+        <span *ngIf="!isLoading">{{ 'carForm.saveChanges' | translate }}</span>
+        <span *ngIf="isLoading">{{ 'loading' | translate }}</span>
+      </button>
+    </form>
+  </div>
+</div>

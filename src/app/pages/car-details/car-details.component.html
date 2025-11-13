@@ -1,0 +1,50 @@
+<div class="car-details" *ngIf="car">
+  <div class="container">
+    <div class="car-header">
+      <h1>{{ car.brand }} {{ car.model }}</h1>
+      <span class="year-badge">{{ car.year }}</span>
+    </div>
+
+    <div class="car-image-container">
+      <img [src]="car.image" alt="{{ car.model }}" class="car-img" />
+      <div class="image-overlay">
+        <div class="price-tag">{{ car.pricePerDay }} MAD<span>/يوم</span></div>
+      </div>
+    </div>
+
+    <div class="car-info">
+      <div class="info-grid">
+        <div class="info-item">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>اللوحة: {{ car.plateNumber }}</span>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-calendar-alt"></i>
+          <span>{{ car.available ? 'متاحة' : 'غير متاحة' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rental-form">
+      <h3>اختيار التواريخ</h3>
+      <div class="date-inputs">
+        <div class="date-input-group">
+          <label for="start-date">تاريخ البداية</label>
+          <input type="date" id="start-date" [(ngModel)]="startDate" />
+        </div>
+        <div class="date-input-group">
+          <label for="end-date">تاريخ النهاية</label>
+          <input type="date" id="end-date" [(ngModel)]="endDate" />
+        </div>
+      </div>
+      <button (click)="rentCar()" class="btn btn-primary">
+        <i class="fas fa-car"></i> حجز السيارة
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!car" class="loading">
+  <div class="spinner"></div>
+  <p>جاري تحميل البيانات...</p>
+</div>

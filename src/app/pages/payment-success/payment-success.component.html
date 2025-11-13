@@ -1,0 +1,59 @@
+<div class="payment-success-container">
+  <div class="success-card" *ngIf="!isLoading && !errorMessage; else loadingOrError">
+    <div class="success-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <h2>تم الدفع بنجاح</h2>
+    <p>تم تأكيد دفعتك بنجاح. سيتم تأكيد حجزك قريبًا.</p>
+
+    <div class="booking-details" *ngIf="booking">
+      <h3>تفاصيل الحجز</h3>
+      <div class="detail-item">
+        <span>رقم الحجز:</span>
+        <span>{{ booking._id }}</span>
+      </div>
+      <div class="detail-item">
+        <span>السيارة:</span>
+        <span>{{ booking.carId.brand }} {{ booking.carId.model }}</span>
+      </div>
+      <div class="detail-item">
+        <span>تاريخ البداية:</span>
+        <span>{{ booking.startDate | date:'shortDate' }}</span>
+      </div>
+      <div class="detail-item">
+        <span>تاريخ النهاية:</span>
+        <span>{{ booking.endDate | date:'shortDate' }}</span>
+      </div>
+      <div class="detail-item">
+        <span>المبلغ الإجمالي:</span>
+        <span>{{ booking.totalAmount }} MAD</span>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-primary" (click)="goToBookings()">
+        <i class="fas fa-list"></i> حجوزاتي
+      </button>
+      <button class="btn btn-secondary" (click)="goToHome()">
+        <i class="fas fa-home"></i> العودة للصفحة الرئيسية
+      </button>
+    </div>
+  </div>
+
+  <ng-template #loadingOrError>
+    <div class="loading-or-error">
+      <div *ngIf="isLoading" class="loading">
+        <div class="spinner"></div>
+        <p>جاري معالجة الدفع...</p>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>{{ errorMessage }}</p>
+        <button class="btn btn-primary" (click)="goToHome()">
+          <i class="fas fa-home"></i> العودة للصفحة الرئيسية
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</div>

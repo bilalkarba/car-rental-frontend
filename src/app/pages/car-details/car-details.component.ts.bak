@@ -1,0 +1,111 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CarService } from '../../services/car.service';
+import { BookingService } from '../../services/booking.service';
+import { AuthService } from '../../services/auth.service';
+import { PaypalService } from '../../services/paypal.service';
+
+@Component({
+  selector: 'app-car-details',
+  standalone: false,
+  templateUrl: './car-details.component.html',
+  styleUrl: './car-details.component.scss',
+})
+export class CarDetailsComponent implements OnInit {
+  car: any;
+  startDate!: string;
+  endDate!: string;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private carService: CarService,
+    private bookingService: BookingService,
+    private authService: AuthService,
+    private paypalService: PaypalService
+  ) {}
+
+  ngOnInit() {
+    const carId = this.route.snapshot.paramMap.get('id');
+    if (carId) {
+      this.carService.getCarById(carId).subscribe({
+        next: (res) => (this.car = res),
+        error: (err) => console.error(err),
+      });
+    }
+  }
+
+  rentCar() {
+    if (!this.startDate || !this.endDate) {
+      alert('⚠️ المرجو اختيار تاريخ البداية والنهاية');
+      return;
+    }
+
+    const user = this.authService.getUser();
+    if (!user) {
+      alert('⚠️ يجب تسجيل الدخول أولاً');
+      return;
+    }
+
+    const days = this.getDaysDiff(this.startDate, this.endDate);
+    const totalPrice = days * this.car.pricePerDay;
+
+    const bookingData = {
+      carId: this.car._id,
+      userId: user.id,
+      startDate: new Date(this.startDate).toISOString(),
+      endDate: new Date(this.endDate).toISOString(),
+      totalAmount: totalPrice,
+    };
+
+    console.log('Sending booking data:', bookingData);
+
+    // Étape 1: Créer la réservation
+    this.bookingService.createBooking(bookingData).subscribe({
+      next: (bookingResponse) => {
+        const bookingId = bookingResponse._id || bookingResponse.id;
+        
+        // Étape 2: Initier le paiement PayPal
+        this.initiatePaypalPayment(bookingId, totalPrice);
+      },
+      error: (err) => {
+        console.error('Booking error:', err);
+        let errorMessage = '⚠️ حدث خطأ أثناء حجز السيارة';
+
+        if (err.error) {
+          if (typeof err.error === 'string') {
+            errorMessage = err.error;
+          } else if (err.error.msg) {
+            errorMessage = err.error.msg;
+          } else if (err.error.message) {
+            errorMessage = err.error.message;
+          }
+        }
+
+        alert(errorMessage);
+      },
+    });
+  }
+  
+  // Initier le paiement PayPal
+  initiatePaypalPayment(bookingId: string, amount: number) {
+    const returnUrl = `${window.location.origin}/payment/success`;
+    const cancelUrl = `${window.location.origin}/payment/cancel`;
+    
+    this.paypalService.createPayment(bookingId, amount, returnUrl, cancelUrl).subscribe({
+      next: (response) => {
+        // Rediriger l'utilisateur vers PayPal pour approbation
+        window.location.href = response.approval_url;
+      },
+      error: (err) => {
+        console.error('PayPal payment error:', err);
+        alert('⚠️ حدث خطأ أثناء تهيئة الدفع عبر PayPal');
+      }
+    });
+  }
+
+  getDaysDiff(start: string, end: string): number {
+    const diff = new Date(end).getTime() - new Date(start).getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+}

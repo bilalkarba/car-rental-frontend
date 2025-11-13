@@ -1,0 +1,85 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h2>{{ 'title' | translate }}</h2>
+    <button class="btn btn-primary" (click)="navigateToAddCar()">
+      <i class="fas fa-plus"></i> {{ 'addCar' | translate }}
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">{{ 'loading' | translate }}</span>
+    </div>
+  </div>
+
+  <h3 class="mt-4">🚗 {{ 'allCars' | translate }}</h3>
+  <table class="table table-bordered" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th>{{ 'image' | translate }}</th>
+        <th>{{ 'brand' | translate }}</th>
+        <th>{{ 'model' | translate }}</th>
+        <th>{{ 'plate' | translate }}</th>
+        <th>{{ 'price' | translate }}</th>
+        <th>{{ 'status' | translate }}</th>
+        <th>{{ 'actions' | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let car of cars">
+        <td>
+          <img *ngIf="car.image" [src]="car.image" [alt]="car.brand" class="car-image">
+          <div *ngIf="!car.image" class="no-image">
+            <i class="fas fa-car"></i>
+          </div>
+        </td>
+        <td>{{ car.brand }}</td>
+        <td>{{ car.model }}</td>
+        <td>{{ car.plateNumber }}</td>
+        <td>{{ car.pricePerDay }} DH</td>
+        <td>
+          <span class="badge" [class.booked]="car.isBooked || !car.available" [class.available]="!car.isBooked && car.available">
+            {{ (car.isBooked || !car.available) ? ('rented' | translate) : ('available' | translate) }}
+          </span>
+        </td>
+        <td>
+          <div class="action-buttons">
+            <button class="btn btn-sm btn-primary me-2" (click)="editCar(car._id)">
+              <i class="fas fa-edit"></i> {{ 'edit' | translate }}
+            </button>
+            <button class="btn btn-sm btn-warning me-2" (click)="toggleAvailability(car)">
+              <i class="fas fa-toggle-on"></i> {{ car.available ? ('disable' | translate) : ('enable' | translate) }}
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="deleteCar(car._id)">
+              <i class="fas fa-trash"></i> {{ 'delete' | translate }}
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="mt-5">📅 {{ 'allBookings' | translate }}</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>{{ 'car' | translate }}</th>
+        <th>{{ 'user' | translate }}</th>
+        <th>{{ 'nationalId' | translate }}</th>
+        <th>{{ 'plate' | translate }}</th>
+        <th>{{ 'startDate' | translate }}</th>
+        <th>{{ 'endDate' | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let b of bookings">
+        <td>{{ b.carId?.brand }} {{ b.carId?.model }}</td>
+        <td>{{ b.userId?.name || 'N/A' }}</td>
+        <td>{{ b.userId?.nationalId || 'N/A' }}</td>
+        <td>{{ b.carId?.plateNumber }}</td>
+        <td>{{ b.startDate | date }}</td>
+        <td>{{ b.endDate | date }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

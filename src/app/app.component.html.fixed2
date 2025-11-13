@@ -1,0 +1,63 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a routerLink="/" class="navbar-brand">
+      <i class="fas fa-car me-2"></i>
+      CarRental
+    </a>
+
+    <!-- Language Selector -->
+    <app-language-selector></app-language-selector>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a routerLink="/cars" class="nav-link">{{ 'navbar.cars' | translate }}</a>
+        </li>
+        <li class="nav-item" *ngIf="authService.isLogged() && authService.getUser()?.role === 'admin'">
+          <a routerLink="/admin-dashboard" class="nav-link">{{ 'navbar.adminDashboard' | translate }}</a>
+        </li>
+
+  <!-- إذا المستخدم غير مسجل الدخول -->
+  <ng-container *ngIf="!authService.isLogged(); else loggedUser">
+    <li class="nav-item">
+      <a routerLink="/login" class="nav-link">{{ 'navbar.login' | translate }}</a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/register" class="nav-link">{{ 'navbar.register' | translate }}</a>
+    </li>
+  </ng-container>
+
+  <!-- إذا المستخدم مسجل الدخول -->
+  <ng-template #loggedUser>
+    <li class="nav-item dropdown">
+      <a
+        class="nav-link dropdown-toggle"
+        href="#"
+        role="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <i class="fas fa-user"></i> {{ authService.getUser()?.name }}
+      </a>
+
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <a href="#" class="dropdown-item" (click)="logout($event)">
+            <i class="fas fa-sign-out-alt"></i> {{ 'navbar.logout' | translate }}
+          </a>
+        </li>
+      </ul>
+    </li>
+  </ng-template>
+
+</ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <router-outlet></router-outlet>
+</div>

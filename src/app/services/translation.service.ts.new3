@@ -1,0 +1,390 @@
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
+
+// تعريف أنواع الترجمات
+interface Translation {
+  [key: string]: string;
+}
+
+interface Translations {
+  [lang: string]: Translation;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TranslationService {
+  private readonly TOKEN_KEY = 'auth_token';
+  private readonly USER_KEY = 'user';
+  private isBrowser: boolean;
+  private readonly API_URL = 'http://localhost:3000/api'; // Update with your backend URL
+
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  private getStorage(): Storage | null {
+    if (!this.isBrowser) return null;
+    try {
+      return window.localStorage;
+    } catch {
+      return null;
+    }
+  }
+
+  private currentLanguage = new BehaviorSubject<string>('ar');
+  currentLanguage$ = this.currentLanguage.asObservable();
+
+  constructor() {
+    // تحقق من وجود لغة محفوظة في التخزين المحلي
+    const savedLanguage = localStorage.getItem('language') || 'ar';
+    this.setLanguage(savedLanguage);
+  }
+
+  setLanguage(language: string) {
+    this.currentLanguage.next(language);
+    localStorage.setItem('language', language);
+  }
+
+  getCurrentLanguage() {
+    return this.currentLanguage.value;
+  }
+
+  // قاموس الترجمة
+  translate(key: string): string {
+    const currentLang = this.getCurrentLanguage();
+    const translations = this.getTranslations();
+
+    // التحقق من وجود اللغة والمفتاح
+    if (translations[currentLang] && translations[currentLang][key]) {
+      return translations[currentLang][key];
+    }
+
+    // إرجاع المفتاح الأصلي إذا لم يتم العثور على الترجمة
+    return key;
+  }
+
+  private getTranslations(): Translations {
+    return {
+      ar: {
+        // القائمة الرئيسية
+        'navbar.cars': 'السيارات',
+        'navbar.adminDashboard': 'لوحة التحكم',
+        'navbar.login': 'تسجيل الدخول',
+        'navbar.register': 'إنشاء حساب',
+        'navbar.logout': 'تسجيل الخروج',
+
+        // صفحة تسجيل الدخول
+        'login.title': 'تسجيل الدخول',
+        'login.email': 'البريد الإلكتروني',
+        'login.password': 'كلمة المرور',
+        'login.submit': 'دخول',
+        'login.noAccount': 'ليس لديك حساب؟',
+        'login.createAccount': 'إنشاء حساب جديد',
+        'login.error': 'فشل تسجيل الدخول. يرجى التحقق من بياناتك والمحاولة مرة أخرى',
+
+        // صفحة إنشاء الحساب
+        'register.title': 'إنشاء حساب جديد',
+        'register.name': 'الاسم',
+        'register.email': 'البريد الإلكتروني',
+        'register.password': 'كلمة المرور',
+        'register.confirmPassword': 'تأكيد كلمة المرور',
+        'register.submit': 'إنشاء حساب',
+        'register.hasAccount': 'لديك حساب بالفعل؟',
+        'register.signIn': 'تسجيل الدخول',
+
+        // صفحة السيارات
+        'cars.title': 'السيارات المتاحة',
+        'cars.rent': 'استأجر',
+        'cars.details': 'تفاصيل',
+        'cars.noCars': 'لا توجد سيارات متاحة حالياً',
+
+        // صفحة تفاصيل السيارة
+        'carDetails.title': 'تفاصيل السيارة',
+        'carDetails.brand': 'العلامة التجارية',
+        'carDetails.model': 'الموديل',
+        'carDetails.year': 'سنة الصنع',
+        'carDetails.price': 'السعر',
+        'carDetails.available': 'متاحة',
+        'carDetails.notAvailable': 'غير متاحة',
+        'carDetails.rent': 'استأجر الآن',
+        'carDetails.back': 'العودة للقائمة',
+
+        // لوحة التحكم
+        'admin.title': 'لوحة التحكم',
+        'admin.cars': 'السيارات',
+        'admin.bookings': 'الحجوزات',
+        'admin.addCar': 'إضافة سيارة جديدة',
+        'admin.edit': 'تعديل',
+        'admin.delete': 'حذف',
+        'admin.toggleAvailability': 'تغيير التوفر',
+        'admin.deleteConfirm': 'هل تريد حذف هذه السيارة؟',
+
+        // إضافة/تعديل سيارة
+        'carForm.title': 'إضافة سيارة جديدة',
+        'carForm.editTitle': 'تعديل السيارة',
+        'carForm.brand': 'العلامة التجارية',
+        'carForm.model': 'الموديل',
+        'carForm.year': 'سنة الصنع',
+        'carForm.price': 'السعر يومياً',
+        'carForm.available': 'متاحة',
+        'carForm.image': 'رابط الصورة',
+        'carForm.description': 'الوصف',
+        'carForm.submit': 'حفظ',
+        'carForm.cancel': 'إلغاء',
+        'carForm.required': 'هذا الحقل مطلوب',
+        'carForm.invalidYear': 'الرجاء إدخال سنة صحيحة',
+        'carForm.invalidPrice': 'الرجاء إدخال سعر صحيح',
+
+        // عام
+        'loading': 'جاري التحميل...',
+        'error': 'حدث خطأ ما',
+        'success': 'تمت العملية بنجاح',
+        'cancel': 'إلغاء',
+        'confirm': 'تأكيد',
+        'save': 'حفظ',
+        'delete': 'حذف',
+        'edit': 'تعديل',
+        'add': 'إضافة',
+        'search': 'بحث',
+        'filter': 'فلترة',
+        'sort': 'ترتيب',
+        'language': 'اللغة'
+      },
+      fr: {
+        // Menu principal
+        'navbar.cars': 'Voitures',
+        'navbar.adminDashboard': 'Tableau de bord',
+        'navbar.login': 'Connexion',
+        'navbar.register': 'Créer un compte',
+        'navbar.logout': 'Déconnexion',
+
+        // Page de connexion
+        'login.title': 'Connexion',
+        'login.email': 'Email',
+        'login.password': 'Mot de passe',
+        'login.submit': 'Se connecter',
+        'login.noAccount': 'Pas de compte?',
+        'login.createAccount': 'Créer un nouveau compte',
+        'login.error': 'Échec de la connexion. Veuillez vérifier vos informations et réessayer',
+
+        // Page d'inscription
+        'register.title': 'Créer un nouveau compte',
+        'register.name': 'Nom',
+        'register.email': 'Email',
+        'register.password': 'Mot de passe',
+        'register.confirmPassword': 'Confirmer le mot de passe',
+        'register.submit': 'Créer un compte',
+        'register.hasAccount': 'Vous avez déjà un compte?',
+        'register.signIn': 'Se connecter',
+
+        // Page des voitures
+        'cars.title': 'Voitures disponibles',
+        'cars.rent': 'Louer',
+        'cars.details': 'Détails',
+        'cars.noCars': 'Aucune voiture disponible actuellement',
+
+        // Page de détails de la voiture
+        'carDetails.title': 'Détails de la voiture',
+        'carDetails.brand': 'Marque',
+        'carDetails.model': 'Modèle',
+        'carDetails.year': 'Année',
+        'carDetails.price': 'Prix',
+        'carDetails.available': 'Disponible',
+        'carDetails.notAvailable': 'Non disponible',
+        'carDetails.rent': 'Louer maintenant',
+        'carDetails.back': 'Retour à la liste',
+
+        // Tableau de bord
+        'admin.title': 'Tableau de bord',
+        'admin.cars': 'Voitures',
+        'admin.bookings': 'Réservations',
+        'admin.addCar': 'Ajouter une nouvelle voiture',
+        'admin.edit': 'Modifier',
+        'admin.delete': 'Supprimer',
+        'admin.toggleAvailability': 'Changer la disponibilité',
+        'admin.deleteConfirm': 'Voulez-vous supprimer cette voiture?',
+
+        // Ajouter/Modifier une voiture
+        'carForm.title': 'Ajouter une nouvelle voiture',
+        'carForm.editTitle': 'Modifier la voiture',
+        'carForm.brand': 'Marque',
+        'carForm.model': 'Modèle',
+        'carForm.year': 'Année',
+        'carForm.price': 'Prix par jour',
+        'carForm.available': 'Disponible',
+        'carForm.image': 'URL de l'image',
+        'carForm.description': 'Description',
+        'carForm.submit': 'Enregistrer',
+        'carForm.cancel': 'Annuler',
+        'carForm.required': 'Ce champ est requis',
+        'carForm.invalidYear': 'Veuillez entrer une année valide',
+        'carForm.invalidPrice': 'Veuillez entrer un prix valide',
+
+        // Général
+        'loading': 'Chargement...',
+        'error': 'Une erreur s'est produite',
+        'success': 'Opération réussie',
+        'cancel': 'Annuler',
+        'confirm': 'Confirmer',
+        'save': 'Enregistrer',
+        'delete': 'Supprimer',
+        'edit': 'Modifier',
+        'add': 'Ajouter',
+        'search': 'Rechercher',
+        'filter': 'Filtrer',
+        'sort': 'Trier',
+        'language': 'Langue'
+      },
+      en: {
+        // Main menu
+        'navbar.cars': 'Cars',
+        'navbar.adminDashboard': 'Admin Dashboard',
+        'navbar.login': 'Login',
+        'navbar.register': 'Register',
+        'navbar.logout': 'Logout',
+
+        // Login page
+        'login.title': 'Login',
+        'login.email': 'Email',
+        'login.password': 'Password',
+        'login.submit': 'Sign In',
+        'login.noAccount': 'Don't have an account?',
+        'login.createAccount': 'Create a new account',
+        'login.error': 'Login failed. Please check your credentials and try again',
+
+        // Register page
+        'register.title': 'Create a new account',
+        'register.name': 'Name',
+        'register.email': 'Email',
+        'register.password': 'Password',
+        'register.confirmPassword': 'Confirm Password',
+        'register.submit': 'Create Account',
+        'register.hasAccount': 'Already have an account?',
+        'register.signIn': 'Sign In',
+
+        // Cars page
+        'cars.title': 'Available Cars',
+        'cars.rent': 'Rent',
+        'cars.details': 'Details',
+        'cars.noCars': 'No cars available at the moment',
+
+        // Car details page
+        'carDetails.title': 'Car Details',
+        'carDetails.brand': 'Brand',
+        'carDetails.model': 'Model',
+        'carDetails.year': 'Year',
+        'carDetails.price': 'Price',
+        'carDetails.available': 'Available',
+        'carDetails.notAvailable': 'Not Available',
+        'carDetails.rent': 'Rent Now',
+        'carDetails.back': 'Back to List',
+
+        // Admin Dashboard
+        'admin.title': 'Admin Dashboard',
+        'admin.cars': 'Cars',
+        'admin.bookings': 'Bookings',
+        'admin.addCar': 'Add New Car',
+        'admin.edit': 'Edit',
+        'admin.delete': 'Delete',
+        'admin.toggleAvailability': 'Toggle Availability',
+        'admin.deleteConfirm': 'Do you want to delete this car?',
+
+        // Add/Edit Car
+        'carForm.title': 'Add New Car',
+        'carForm.editTitle': 'Edit Car',
+        'carForm.brand': 'Brand',
+        'carForm.model': 'Model',
+        'carForm.year': 'Year',
+        'carForm.price': 'Price per day',
+        'carForm.available': 'Available',
+        'carForm.image': 'Image URL',
+        'carForm.description': 'Description',
+        'carForm.submit': 'Save',
+        'carForm.cancel': 'Cancel',
+        'carForm.required': 'This field is required',
+        'carForm.invalidYear': 'Please enter a valid year',
+        'carForm.invalidPrice': 'Please enter a valid price',
+
+        // General
+        'loading': 'Loading...',
+        'error': 'An error occurred',
+        'success': 'Operation successful',
+        'cancel': 'Cancel',
+        'confirm': 'Confirm',
+        'save': 'Save',
+        'delete': 'Delete',
+        'edit': 'Edit',
+        'add': 'Add',
+        'search': 'Search',
+        'filter': 'Filter',
+        'sort': 'Sort',
+        'language': 'Language'
+      }
+    };
+  }
+
+  login(credentials: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+
+    return this.http.post(`${this.API_URL}/auth/login`, credentials, { headers }).pipe(
+      tap((response: any) => {
+        console.log('Login response:', response);
+        if (response.token && response.user) {
+          const storage = this.getStorage();
+          if (storage) {
+            storage.setItem(this.TOKEN_KEY, response.token);
+            const userData = {
+              ...response.user,
+              id: response.user.id || response.user._id
+            };
+            storage.setItem(this.USER_KEY, JSON.stringify(userData));
+          }
+        }
+      })
+    );
+  }
+
+  isLogged(): boolean {
+    const storage = this.getStorage();
+    return storage ? !!storage.getItem(this.TOKEN_KEY) : false;
+  }
+
+  getUser(): any {
+    const storage = this.getStorage();
+    if (!storage) return null;
+
+    const user = storage.getItem(this.USER_KEY);
+    return user ? JSON.parse(user) : null;
+  }
+
+  logout(): void {
+    const storage = this.getStorage();
+    if (storage) {
+      storage.removeItem(this.TOKEN_KEY);
+      storage.removeItem(this.USER_KEY);
+    }
+    this.router.navigate(['/login']);
+  }
+
+  register(userData: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+
+    return this.http.post(`${this.API_URL}/auth/register`, userData, { headers });
+  }
+}

@@ -1,0 +1,31 @@
+<div class="cars-container">
+  <div class="header">
+    <h1>{{ 'cars.title' | translate }}</h1>
+    <p>{{ 'description' | translate }}</p>
+  </div>
+
+  <div class="cars-grid">
+    <div class="car-card" *ngFor="let car of cars">
+      <div class="car-image-container">
+        <img [src]="car.image" [alt]="car.model" class="car-image">
+        <div class="car-overlay">
+          <div class="price-badge">{{ car.pricePerDay }} <span>{{ 'pricePerDay' | translate }}</span></div>
+        </div>
+      </div>
+      <div class="car-info">
+        <h3>{{ car.brand }} {{ car.model }}</h3>
+        <div class="car-details">
+          <span class="year"><i class="fas fa-calendar"></i> {{ car.year }}</span>
+          <span class="plate"><i class="fas fa-id-card"></i> {{ car.plateNumber }}</span>
+        </div>
+        <button class="view-details-btn" [routerLink]="['/cars', car._id]">
+          <span>{{ 'detailsBtn' | translate }}</span>
+          <i class="fas fa-arrow-left"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="!cars?.length">
+    <div class="spinner"></div>
+    <p>{{ 'loading' | translate }}</p>

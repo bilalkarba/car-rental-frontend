@@ -1,0 +1,46 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h4>تفاصيل الدفع</h4>
+        </div>
+        <div class="card-body">
+          <div *ngIf="errorMessage" class="alert alert-danger">
+            {{ errorMessage }}
+          </div>
+
+          <div *ngIf="car" class="mb-4">
+            <h5>تفاصيل السيارة</h5>
+            <div class="row">
+              <div class="col-md-4">
+                <img [src]="car.image" class="img-fluid rounded" alt="{{ car.brand }} {{ car.model }}">
+              </div>
+              <div class="col-md-8">
+                <h6>{{ car.brand }} {{ car.model }}</h6>
+                <p><strong>السعر اليومي:</strong> {{ car.pricePerDay }} درهم</p>
+                <p><strong>الوقود:</strong> {{ car.fuelType }}</p>
+                <p><strong>النوع:</strong> {{ car.type }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="bookingData" class="mb-4">
+            <h5>تفاصيل الحجز</h5>
+            <p><strong>تاريخ البداية:</strong> {{ bookingData.startDate | date:'dd/MM/yyyy' }}</p>
+            <p><strong>تاريخ النهاية:</strong> {{ bookingData.endDate | date:'dd/MM/yyyy' }}</p>
+            <p><strong>المبلغ الإجمالي:</strong> {{ bookingData.totalAmount }} درهم</p>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-secondary" (click)="cancel()">إلغاء</button>
+            <button class="btn btn-primary" (click)="createBookingAndPay()" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+              الدفع عبر PayPal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

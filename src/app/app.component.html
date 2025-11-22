@@ -13,10 +13,16 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
+          <a routerLink="/" class="nav-link">{{ 'navbar.home' | translate }}</a>
+        </li>
+        <li class="nav-item">
           <a routerLink="/cars" class="nav-link">{{ 'navbar.cars' | translate }}</a>
         </li>
         <li class="nav-item" *ngIf="authService.isLogged() && authService.getUser()?.role === 'admin'">
           <a routerLink="/admin-dashboard" class="nav-link">{{ 'navbar.adminDashboard' | translate }}</a>
+        </li>
+          <li class="nav-item" *ngIf="authService.isLogged() && authService.getUser()?.role === 'user'">
+          <a routerLink="/dashboard" class="nav-link">{{ 'navbar.dashboard' | translate }}</a>
         </li>
 
   <!-- إذا المستخدم غير مسجل الدخول -->
@@ -43,6 +49,11 @@
       </a>
 
       <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <a routerLink="/dashboard" class="dropdown-item">
+            <i class="fas fa-tachometer-alt"></i> {{ 'navbar.dashboard' | translate }}
+          </a>
+        </li>
         <li>
           <a href="#" class="dropdown-item" (click)="logout($event)">
             <i class="fas fa-sign-out-alt"></i> {{ 'navbar.logout' | translate }}

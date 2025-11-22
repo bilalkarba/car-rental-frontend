@@ -93,4 +93,9 @@ export class AuthService {
     }
     this.router.navigate(['/login']);
   }
+
+  isAdmin(): boolean {
+    const user = this.getUser();
+    return user ? (user.role === 'admin' || user.role === 'superadmin') : false;
+  }
 }

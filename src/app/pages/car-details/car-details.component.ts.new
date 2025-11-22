@@ -1,0 +1,175 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CarService } from '../../services/car.service';
+import { BookingService } from '../../services/booking.service';
+import { AuthService } from '../../services/auth.service';
+import { PaypalService } from '../../services/paypal.service';
+import { TranslationService } from '../../services/translation.service';
+import { map } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-car-details',
+  standalone: false,
+  templateUrl: './car-details.component.html',
+  styleUrls: ['./car-details.component.scss'],
+})
+export class CarDetailsComponent implements OnInit {
+  car: any;
+  startDate!: string;
+  endDate!: string;
+  carBookings: any[] = [];
+  isCarAvailable: boolean = true;
+  nextAvailableDate: string | null = null;
+  isCurrentlyAvailable: boolean = true;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private carService: CarService,
+    private bookingService: BookingService,
+    private authService: AuthService,
+    private paypalService: PaypalService,
+    public translationService: TranslationService
+  ) {}
+
+  ngOnInit() {
+    const carId = this.route.snapshot.paramMap.get('id');
+    if (carId) {
+      this.carService.getCarById(carId).subscribe({
+        next: (res) => {
+          this.car = res;
+          this.isCurrentlyAvailable = this.car.available;
+          // التحقق من حجوزات السيارة
+          this.checkCarAvailability(carId);
+        },
+        error: (err) => console.error(err),
+      });
+    }
+  }
+
+  // التحقق من توفر السيارة
+  checkCarAvailability(carId: string) {
+    this.bookingService.getAllBookings().pipe(
+      map(bookings => bookings.filter(booking =>
+        booking.carId === carId &&
+        (booking.status === 'confirmed' || booking.status === 'pending')
+      ))
+    ).subscribe({
+      next: (bookings) => {
+        this.carBookings = bookings;
+        this.checkDatesOverlap();
+      },
+      error: (err) => {
+        console.error('Error fetching bookings:', err);
+        // في حالة خطأ 403، نفترض أن السيارة متاحة
+        if (err.status === 403) {
+          this.carBookings = [];
+          this.checkDatesOverlap();
+        } else {
+          // في حالة أخطاء أخرى، نعرض رسالة للمستخدم
+          alert('⚠️ ' + this.translationService.translate('error.fetchingBookings'));
+        }
+      }
+    });
+  }
+
+  // التحقق من تداخل التواريخ
+  checkDatesOverlap() {
+    if (!this.startDate || !this.endDate) {
+      // إذا لم يتم اختيار تواريخ، نعرض حالة توفر السيارة الأساسية
+      this.isCurrentlyAvailable = this.car.available;
+      return;
+    }
+
+    const start = new Date(this.startDate);
+    const end = new Date(this.endDate);
+
+    this.isCarAvailable = true;
+    this.isCurrentlyAvailable = this.car.available; // نبدأ بالحالة الأساسية
+    this.nextAvailableDate = null;
+
+    // التحقق من كل الحجوزات المؤكدة
+    for (const booking of this.carBookings) {
+      const bookingStart = new Date(booking.startDate);
+      const bookingEnd = new Date(booking.endDate);
+
+      // إذا كانت الفترة المطلوبة تتداخل مع فترة الحجز
+      if (
+        (start <= bookingEnd && end >= bookingStart) ||
+        (start >= bookingStart && end <= bookingEnd) ||
+        (start <= bookingStart && end >= bookingEnd)
+      ) {
+        this.isCarAvailable = false;
+        this.isCurrentlyAvailable = false; // تحديث الحالة المعروضة
+
+        // إذا كان تاريخ بدء الحجز بعد تاريخ نهاية الحجز الحالي
+        if (end < bookingStart) {
+          this.nextAvailableDate = bookingStart.toISOString().split('T')[0];
+        } else if (end < bookingEnd) {
+          // إذا كان تاريخ بدء الحجز داخل فترة الحجز الحالية
+          this.nextAvailableDate = new Date(bookingEnd.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        }
+        break;
+      }
+    }
+  }
+
+  rentCar() {
+    if (!this.startDate || !this.endDate) {
+      alert('⚠️ ' + this.translationService.translate('car.selectDates'));
+      return;
+    }
+
+    // التحقق من توفر السيارة في التواريخ المحددة
+    this.checkDatesOverlap();
+
+    if (!this.isCarAvailable) {
+      let message = '⚠️ ' + this.translationService.translate('carStatus.booked');
+
+      if (this.nextAvailableDate) {
+        const nextDate = new Date(this.nextAvailableDate);
+        const formattedDate = nextDate.toLocaleDateString(this.translationService.getCurrentLanguage() === 'ar' ? 'ar-MA' : this.translationService.getCurrentLanguage() === 'fr' ? 'fr-FR' : 'en-US');
+        message += ' ' + this.translationService.translate('carStatus.availableAfter') + ': ' + formattedDate;
+      }
+
+      alert(message);
+      return;
+    }
+
+    const user = this.authService.getUser();
+    if (!user) {
+      alert('⚠️ ' + this.translationService.translate('login.error'));
+      return;
+    }
+
+    const days = this.getDaysDiff(this.startDate, this.endDate);
+    const totalPrice = days * this.car.pricePerDay;
+
+    const bookingData = {
+      carId: this.car._id,
+      userId: user.id,
+      startDate: new Date(this.startDate).toISOString(),
+      endDate: new Date(this.endDate).toISOString(),
+      totalAmount: totalPrice,
+    };
+
+    // تحديث حالة السيارة إلى غير متاحة قبل الانتقال للدفع
+    this.carService.updateCarAvailability(this.car._id, false).subscribe({
+      next: () => {
+        // الانتقال إلى صفحة الدفع
+        this.router.navigate(['/payment'], {
+          state: { car: this.car, bookingData },
+        });
+      },
+      error: (err) => {
+        console.error('Error updating car availability:', err);
+        alert('⚠️ حدث خطأ أثناء تحديث حالة السيارة');
+      }
+    });
+  }
+
+  getDaysDiff(start: string, end: string): number {
+    const diff = new Date(end).getTime() - new Date(start).getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+}

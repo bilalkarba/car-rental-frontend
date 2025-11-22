@@ -3,6 +3,7 @@ import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
 import { TranslationService } from './services/translation.service';
 import { takeUntil, Subject } from 'rxjs';
+import { LanguageStorageService } from './services/language-storage.service';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ export class AppComponent implements OnInit {
     private router: Router,
     private translationService: TranslationService,
     private cd: ChangeDetectorRef,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private languageStorageService: LanguageStorageService
   ) {}
 
   ngOnInit(): void {
@@ -28,6 +30,17 @@ export class AppComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.ngZone.run(() => {
+          // إجبار تحديث الواجهة بالكامل
+          this.cd.detectChanges();
+        });
+      });
+      
+    // الاستماع لتغييرات التخزين المحلي
+    this.languageStorageService.languageChange$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.ngZone.run(() => {
+          // إجبار تحديث الواجهة بالكامل
           this.cd.detectChanges();
         });
       });

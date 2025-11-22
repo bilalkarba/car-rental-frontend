@@ -9,52 +9,29 @@ export class BookingService {
 
   constructor(private http: HttpClient) {}
 
-  createBooking(data: any): Observable<any> {
+  private getHeaders() {
     const token = localStorage.getItem('auth_token');
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      })
     };
-    
-    // Mettre à jour les noms des champs pour correspondre au backend
-    const bookingData = {
-      carId: data.carId,
-      userId: data.userId,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      totalAmount: data.totalPrice || data.totalAmount
-    };
-    
-    return this.http.post(this.apiUrl, bookingData, { headers });
   }
 
-  getAllBookings(): Observable<any[]> {
-    const token = localStorage.getItem('auth_token');
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    };
-    
-    return this.http.get<any[]>(this.apiUrl, { headers });
+  createBooking(data: any): Observable<any> {
+    return this.http.post(this.apiUrl, data, this.getHeaders());
   }
-  
-  getBookingById(id: string): Observable<any> {
-    const token = localStorage.getItem('auth_token');
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    };
-    
-    return this.http.get(`${this.apiUrl}/${id}`, { headers });
+
+  getAdminBookings(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}`, this.getHeaders());
   }
-  
-  updateBookingStatus(id: string, status: string): Observable<any> {
-    const token = localStorage.getItem('auth_token');
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    };
-    
-    return this.http.patch(`${this.apiUrl}/${id}/status`, { status }, { headers });
+
+  getUserBookings(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/my`, this.getHeaders());
+  }
+
+  getBookingsByCarId(carId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/car/${carId}`);
   }
 }

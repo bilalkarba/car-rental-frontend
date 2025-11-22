@@ -1,1 +1,56 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h2>{{ translationService.translate('dashboard.title') || 'Tableau de bord' }}</h2>
+    <p>{{ translationService.translate('dashboard.subtitle') || 'Mes réservations de voitures' }}</p>
+  </div>
+
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>{{ translationService.translate('loading') || 'Chargement...' }}</p>
+  </div>
+
+  <div class="no-bookings-message" *ngIf="!isLoading && userBookings.length === 0">
+    <i class="fas fa-car"></i>
+    <h3>{{ translationService.translate('dashboard.noBookings') || 'Vous n\'avez pas encore de réservations' }}</h3>
+    <button class="btn btn-primary" (click)="navigateToCars()">
+      <i class="fas fa-search"></i>
+      {{ translationService.translate('dashboard.browseCars') || 'Parcourir les voitures' }}
+    </button>
+  </div>
+
+  <div class="bookings-grid" *ngIf="!isLoading && userBookings.length > 0">
+    <div class="booking-card" *ngFor="let booking of userBookings">
+      <div class="booking-image">
+        <ng-container *ngIf="booking.car">
+          <img [src]="booking.car.image || 'assets/images/default-car.jpg'" [alt]="booking.car.model || 'Car'" />
+          <div class="booking-price" *ngIf="booking.car.pricePerDay">{{ booking.car.pricePerDay }} MAD/{{ translationService.translate('pricePerDay') || 'jour' }}</div>
+        </ng-container>
+        <ng-container *ngIf="!booking.car">
+          <div class="loading-car-info">
+            <div class="spinner"></div>
+            <p>{{ translationService.translate('loading') || 'Chargement...' }}</p>
+          </div>
+        </ng-container>
+      </div>
+      <div class="booking-info">
+        <h3 *ngIf="booking.car">{{ booking.car.brand }} {{ booking.car.model }}</h3>
+        <h3 *ngIf="!booking.car">{{ translationService.translate('booking.carInfo') || 'Informations sur la voiture en cours de chargement...' }}</h3>
+        <div class="booking-details" *ngIf="booking.car">
+          <span><i class="fas fa-calendar"></i> {{ booking.car.year }}</span>
+          <span><i class="fas fa-id-card"></i> {{ booking.car.plateNumber }}</span>
+        </div>
+        <div class="booking-dates">
+          <div><strong>{{ translationService.translate('startDate') || 'Date de début' }}:</strong> {{ booking.startDate | date:'dd/MM/yyyy HH:mm' }}</div>
+          <div><strong>{{ translationService.translate('endDate') || 'Date de fin' }}:</strong> {{ booking.endDate | date:'dd/MM/yyyy HH:mm' }}</div>
+          <div class="booking-duration"><strong>{{translationService.translate('booking.duration')}} :</strong> {{ calculateBookingDuration(booking) }}</div>
+        </div>
+        <div class="booking-status" [class.confirmed]="booking.status === 'confirmed'" [class.pending]="booking.status === 'pending'" [class.cancelled]="booking.status === 'cancelled'">
+          {{ booking.status === 'confirmed' ? (translationService.translate('bookings.confirmed') || 'Confirmé') : 
+             booking.status === 'pending' ? (translationService.translate('bookings.pending') || 'En attente') : 
+             (translationService.translate('bookings.cancelled') || 'Annulé') }}
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>

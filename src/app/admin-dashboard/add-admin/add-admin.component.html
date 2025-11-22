@@ -1,0 +1,111 @@
+<div class="add-admin-container">
+  <div class="form-container">
+    <h2>{{ 'addAdminTitle' | translate }}</h2>
+
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="addAdminForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">{{ 'username' | translate }}</label>
+        <input 
+          type="text" 
+          id="username" 
+          formControlName="username" 
+          class="form-control"
+          [ngClass]="{ 'is-invalid': addAdminForm.get('username')?.errors && addAdminForm.get('username')?.touched }">
+        <div *ngIf="addAdminForm.get('username')?.errors?.['required'] && addAdminForm.get('username')?.touched" class="invalid-feedback">
+          {{ 'usernameRequired' | translate }}
+        </div>
+        <div *ngIf="addAdminForm.get('username')?.errors?.['minlength'] && addAdminForm.get('username')?.touched" class="invalid-feedback">
+          {{ 'usernameMinLength' | translate }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">{{ 'email' | translate }}</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          class="form-control"
+          [ngClass]="{ 'is-invalid': addAdminForm.get('email')?.errors && addAdminForm.get('email')?.touched }">
+        <div *ngIf="addAdminForm.get('email')?.errors?.['required'] && addAdminForm.get('email')?.touched" class="invalid-feedback">
+          {{ 'emailRequired' | translate }}
+        </div>
+        <div *ngIf="addAdminForm.get('email')?.errors?.['email'] && addAdminForm.get('email')?.touched" class="invalid-feedback">
+          {{ 'emailInvalid' | translate }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="fullName">{{ 'fullName' | translate }}</label>
+        <input 
+          type="text" 
+          id="fullName" 
+          formControlName="fullName" 
+          class="form-control"
+          [ngClass]="{ 'is-invalid': addAdminForm.get('fullName')?.errors && addAdminForm.get('fullName')?.touched }">
+        <div *ngIf="addAdminForm.get('fullName')?.errors?.['required'] && addAdminForm.get('fullName')?.touched" class="invalid-feedback">
+          {{ 'fullNameRequired' | translate }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">{{ 'password' | translate }}</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password" 
+          class="form-control"
+          [ngClass]="{ 'is-invalid': addAdminForm.get('password')?.errors && addAdminForm.get('password')?.touched }">
+        <div *ngIf="addAdminForm.get('password')?.errors?.['required'] && addAdminForm.get('password')?.touched" class="invalid-feedback">
+          {{ 'passwordRequired' | translate }}
+        </div>
+        <div *ngIf="addAdminForm.get('password')?.errors?.['minlength'] && addAdminForm.get('password')?.touched" class="invalid-feedback">
+          {{ 'passwordMinLength' | translate }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">{{ 'confirmPassword' | translate }}</label>
+        <input 
+          type="password" 
+          id="confirmPassword" 
+          formControlName="confirmPassword" 
+          class="form-control"
+          [ngClass]="{ 'is-invalid': addAdminForm.get('confirmPassword')?.errors && addAdminForm.get('confirmPassword')?.touched }">
+        <div *ngIf="addAdminForm.get('confirmPassword')?.errors?.['required'] && addAdminForm.get('confirmPassword')?.touched" class="invalid-feedback">
+          {{ 'confirmPasswordRequired' | translate }}
+        </div>
+        <div *ngIf="addAdminForm.errors?.['passwordMismatch'] && addAdminForm.get('confirmPassword')?.touched" class="invalid-feedback">
+          {{ 'passwordMismatch' | translate }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="role">{{ 'role' | translate }}</label>
+        <select 
+          id="role" 
+          formControlName="role" 
+          class="form-control"
+          [ngClass]="{ 'is-invalid': addAdminForm.get('role')?.errors && addAdminForm.get('role')?.touched }">
+          <option value="admin">{{ 'adminRole' | translate }}</option>
+        </select>
+        <div *ngIf="addAdminForm.get('role')?.errors?.['required'] && addAdminForm.get('role')?.touched" class="invalid-feedback">
+          {{ 'roleRequired' | translate }}
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="addAdminForm.invalid || isLoading">
+          <span *ngIf="!isLoading">{{ 'addAdminBtn' | translate }}</span>
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span *ngIf="isLoading">{{ 'addingAdmin' | translate }}</span>
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="cancel()">{{ 'cancel' | translate }}</button>
+      </div>
+    </form>
+  </div>
+</div>

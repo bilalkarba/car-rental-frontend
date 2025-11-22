@@ -4,7 +4,8 @@
   </button>
   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
     <li *ngFor="let lang of languages">
-      <a class="dropdown-item" href="#" (click)="changeLanguage(lang.code); $event.preventDefault()">
+      <a class="dropdown-item" href="#" (click)="changeLanguage(lang.code); $event.preventDefault()" 
+         [attr.data-lang]="lang.code">
         {{ lang.flag }} {{ lang.name }}
       </a>
     </li>

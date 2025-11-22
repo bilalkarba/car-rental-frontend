@@ -4,8 +4,34 @@
     <p>{{ 'description' | translate }}</p>
   </div>
 
+<!-- Formulaire de recherche -->
+<div class="search-container mb-4 p-3 bg-light rounded">
+  <h4 class="mb-3">{{ 'title' | translate }}</h4>
+  <form [formGroup]="searchForm" class="row g-3">
+    <div class="col-md-4">
+      <label for="carName" class="form-label">{{ 'carName' | translate }}</label>
+      <input type="text" class="form-control" id="carName" formControlName="carName" placeholder="{{ 'carNamePlaceholder' | translate }}">
+    </div>
+    <div class="col-md-3">
+      <label for="minPrice" class="form-label">{{ 'minPrice' | translate }}</label>
+      <input type="number" class="form-control" id="minPrice" formControlName="minPrice" min="0" placeholder="0">
+    </div>
+    <div class="col-md-3">
+      <label for="maxPrice" class="form-label">{{ 'maxPrice' | translate }}</label>
+      <input type="number" class="form-control" id="maxPrice" formControlName="maxPrice" min="0" placeholder="1000000">
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <div class="btn-group w-100" role="group">
+        <button type="button" class="btn btn-primary" (click)="searchCars()">{{ 'searchBtn' | translate }}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="resetSearch()">{{ 'resetBtn' | translate }}</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+
   <div class="cars-grid">
-    <div class="car-card" *ngFor="let car of cars">
+    <div class="car-card" *ngFor="let car of filteredCars">
       <div class="car-image-container">
         <img [src]="car.image" [alt]="car.model" class="car-image">
         <div class="car-overlay">
@@ -26,6 +52,6 @@
     </div>
   </div>
 
-  <div class="loading" *ngIf="!cars?.length">
+  <div class="loading" *ngIf="!cars.length">
     <div class="spinner"></div>
     <p>{{ 'loading' | translate }}</p>

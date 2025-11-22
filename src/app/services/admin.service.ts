@@ -57,12 +57,14 @@ export class AdminService {
 
   // ➕ إضافة سيارة جديدة
   addCar(carData: FormData): Observable<any> {
-    const token = localStorage.getItem('auth_token');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    return this.http.post(`${this.apiUrl}/cars`, carData, { headers });
-  }
+  const token = localStorage.getItem('auth_token');
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`
+  });
+
+  return this.http.post(`${this.apiUrl}/cars`, carData, { headers });
+}
+
 
   // 🔄 تحديث حالة توفر السيارة
   updateCarAvailability(carId: string, available: boolean): Observable<any> {
@@ -70,5 +72,10 @@ export class AdminService {
       { available }, 
       this.getHeaders()
     );
+  }
+
+  // 👤 إضافة مشرف جديد
+  addAdmin(adminData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/register`, adminData, this.getHeaders());
   }
 }

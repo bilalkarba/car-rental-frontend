@@ -6,11 +6,12 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PaypalService {
+
   private apiUrl = 'http://localhost:3000/api/payments';
 
   constructor(private http: HttpClient) {}
 
-  // Helper method to get headers
+  // Helper: auth headers
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('auth_token');
     return new HttpHeaders({
@@ -19,34 +20,52 @@ export class PaypalService {
     });
   }
 
-  // Create PayPal payment after booking
-  createPayment(bookingId: string, amount: number, returnUrl: string, cancelUrl: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/create`, {
-      bookingId,
-      amount,
-      return_url: returnUrl,
-      cancel_url: cancelUrl
-    }, { headers: this.getHeaders() });
+  /* ===================================================
+     1️⃣ CREATE PAYMENT (NO BOOKING CREATED YET)
+     Backend:
+       POST /api/payments/create
+  =================================================== */
+  createPayment(data: any): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/create`,
+      data,
+      { headers: this.getHeaders(), withCredentials: true }
+    );
   }
 
-  // Execute payment after user approval
+  /* ===================================================
+     2️⃣ EXECUTE PAYMENT (بعد الموافقة على PayPal)
+     Backend:
+       GET /api/payments/execute?paymentId=..&PayerID=..
+  =================================================== */
   executePayment(paymentId: string, payerId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/execute?paymentId=${paymentId}&PayerID=${payerId}`, {
-      headers: this.getHeaders()
-    });
+    return this.http.get(
+      `${this.apiUrl}/execute?paymentId=${paymentId}&PayerID=${payerId}`,
+      { headers: this.getHeaders(), withCredentials: true }
+    );
   }
-  
-  // Cancel payment
+
+  /* ===================================================
+     3️⃣ CANCEL PAYMENT
+     Backend:
+       GET /api/payments/cancel?paymentId=..
+  =================================================== */
   cancelPayment(paymentId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/cancel?paymentId=${paymentId}`, {
-      headers: this.getHeaders()
-    });
+    return this.http.get(
+      `${this.apiUrl}/cancel?paymentId=${paymentId}`,
+      { headers: this.getHeaders(), withCredentials: true }
+    );
   }
-  
-  // Get payment status
+
+  /* ===================================================
+     4️⃣ GET PAYMENT STATUS
+     Backend:
+       GET /api/payments/status/:paymentId
+  =================================================== */
   getPaymentStatus(paymentId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/status/${paymentId}`, {
-      headers: this.getHeaders()
-    });
+    return this.http.get(
+      `${this.apiUrl}/status/${paymentId}`,
+      { headers: this.getHeaders(), withCredentials: true }
+    );
   }
 }

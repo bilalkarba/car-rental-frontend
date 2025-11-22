@@ -3,40 +3,44 @@
     <div class="success-icon">
       <i class="fas fa-check-circle"></i>
     </div>
-    <h2>تم الدفع بنجاح</h2>
-    <p>تم تأكيد دفعتك بنجاح. سيتم تأكيد حجزك قريبًا.</p>
+    <h2>{{ 'paypal.success' | translate }}</h2>
+    <p>{{ 'paymentConfirmed' | translate }}</p>
 
     <div class="booking-details" *ngIf="booking">
-      <h3>تفاصيل الحجز</h3>
+      <h3>{{ 'bookingDetails' | translate }}</h3>
       <div class="detail-item">
-        <span>رقم الحجز:</span>
+        <span>{{ 'bookingNumber' | translate }}:</span>
         <span>{{ booking._id }}</span>
       </div>
       <div class="detail-item">
-        <span>السيارة:</span>
+        <span>{{ 'car' | translate }}:</span>
         <span>{{ booking.carId.brand }} {{ booking.carId.model }}</span>
       </div>
       <div class="detail-item">
-        <span>تاريخ البداية:</span>
+        <span>{{ 'startDate' | translate }}:</span>
         <span>{{ booking.startDate | date:'shortDate' }}</span>
       </div>
       <div class="detail-item">
-        <span>تاريخ النهاية:</span>
+        <span>{{ 'endDate' | translate }}:</span>
         <span>{{ booking.endDate | date:'shortDate' }}</span>
       </div>
       <div class="detail-item">
-        <span>المبلغ الإجمالي:</span>
+        <span>{{ 'totalPrice' | translate }}:</span>
         <span>{{ booking.totalAmount }} MAD</span>
       </div>
     </div>
 
     <div class="action-buttons">
       <button class="btn btn-primary" (click)="goToBookings()">
-        <i class="fas fa-list"></i> حجوزاتي
+        <i class="fas fa-list"></i> {{ 'bookings.title' | translate }}
       </button>
       <button class="btn btn-secondary" (click)="goToHome()">
-        <i class="fas fa-home"></i> العودة للصفحة الرئيسية
+        <i class="fas fa-home"></i> {{ 'backToHome' | translate }}
       </button>
+      <button class="btn btn-success" (click)="downloadReceipt()">
+      <i class="fas fa-download"></i> {{ 'downloadReceipt' | translate }}
+      </button>
+
     </div>
   </div>
 
@@ -44,14 +48,14 @@
     <div class="loading-or-error">
       <div *ngIf="isLoading" class="loading">
         <div class="spinner"></div>
-        <p>جاري معالجة الدفع...</p>
+        <p>{{ 'paypal.processing' | translate }}</p>
       </div>
 
       <div *ngIf="errorMessage" class="error-message">
         <i class="fas fa-exclamation-triangle"></i>
         <p>{{ errorMessage }}</p>
         <button class="btn btn-primary" (click)="goToHome()">
-          <i class="fas fa-home"></i> العودة للصفحة الرئيسية
+          <i class="fas fa-home"></i> {{ 'backToHome' | translate }}
         </button>
       </div>
     </div>

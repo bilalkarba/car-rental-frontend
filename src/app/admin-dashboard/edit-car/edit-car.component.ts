@@ -4,6 +4,7 @@ import { AdminService } from '../../services/admin.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-edit-car',
@@ -21,26 +22,36 @@ export class EditCarComponent implements OnInit {
     private fb: FormBuilder,
     private adminService: AdminService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public translationService: TranslationService
   ) {
     this.carForm = this.fb.group({
       brand: ['', Validators.required],
       model: ['', Validators.required],
       plateNumber: ['', Validators.required],
       pricePerDay: ['', [Validators.required, Validators.min(0)]],
-      available: [true]
+      available: [true],
+      fuel: ['', Validators.required],
+      type: ['', Validators.required]
     });
   }
 
   ngOnInit() {
-    this.carId = this.route.snapshot.paramMap.get('id')!;
-    this.loadCar();
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.carId = id;
+      this.loadCar();
+    } else {
+      this.router.navigate(['/admin-dashboard']);
+    }
   }
 
   loadCar() {
     this.adminService.getCarById(this.carId).subscribe({
       next: (car) => {
-        this.carForm.patchValue(car);
+        if (car) {
+          this.carForm.patchValue(car);
+        }
       },
       error: (error) => {
         console.error('Error loading car:', error);
@@ -50,6 +61,11 @@ export class EditCarComponent implements OnInit {
   }
 
   onSubmit() {
+    // Mark all fields as touched to trigger validation
+    Object.keys(this.carForm.controls).forEach(key => {
+      this.carForm.get(key)?.markAsTouched();
+    });
+    
     if (this.carForm.valid) {
       this.isLoading = true;
       this.adminService.updateCar(this.carId, this.carForm.value).subscribe({
@@ -59,12 +75,23 @@ export class EditCarComponent implements OnInit {
         error: (error) => {
           console.error('Error updating car:', error);
           this.isLoading = false;
+          
+          // Show user-friendly error message
+          if (error?.error?.message) {
+            alert(this.translationService.translate('errorPrefix') + ' ' + error.error.message);
+          } else {
+            alert(this.translationService.translate('updateCarError') || 'An error occurred while updating the car. Please try again.');
+          }
         }
       });
+    } else {
+      // Form is invalid, show a general message
+      alert(this.translationService.translate('fillAllFields'));
     }
   }
 
   goBack() {
     this.router.navigate(['/admin-dashboard']);
   }
+  
 }

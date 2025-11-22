@@ -19,12 +19,16 @@
     "@angular/platform-server": "^20.3.11",
     "@angular/router": "^20.3.11",
     "bootstrap": "^5.3.8",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.2",
     "rxjs": "^7.8.2",
+    "socket.io-client": "^4.8.1",
     "tslib": "^2.8.1",
     "zone.js": "^0.15.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^20.3.10",
-    "@angular/cli": "^20.3.10"
+    "@angular/cli": "^20.3.10",
+    "@types/jest": "^30.0.0"
   }
 }

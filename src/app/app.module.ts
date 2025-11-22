@@ -8,11 +8,12 @@ import { AppComponent } from './app.component';
 import { CarsComponent } from './pages/cars/cars.component';
 import { CarDetailsComponent } from './pages/car-details/car-details.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AddCarComponent } from './admin-dashboard/add-car/add-car.component';
 import { EditCarComponent } from './admin-dashboard/edit-car/edit-car.component';
-import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
+import { AddAdminComponent } from './admin-dashboard/add-admin/add-admin.component';
+
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { LanguageSelectorComponent } from "./components/language-selector/language-selector.component";
 import { TranslatePipe } from "./pipes/translate.pipe";
@@ -21,6 +22,7 @@ import { PaymentSuccessComponent } from './pages/payment-success/payment-success
 import { PaymentCancelComponent } from './pages/payment-cancel/payment-cancel.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { DashboardRealtimeComponent } from './pages/admin/dashboard-realtime/dashboard-realtime.component';
 
 
 @NgModule({
@@ -31,7 +33,8 @@ import { RegisterComponent } from './pages/register/register.component';
     DashboardComponent,
     PaymentComponent,
     PaymentSuccessComponent,
-    PaymentCancelComponent
+    PaymentCancelComponent,
+    DashboardRealtimeComponent
   
     
   ],
@@ -39,11 +42,13 @@ import { RegisterComponent } from './pages/register/register.component';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     CommonModule,
-    AdminDashboardComponent,
+
     AddCarComponent,
     EditCarComponent,
+    AddAdminComponent,
     LanguageSelectorComponent,
     TranslatePipe,
     LoginComponent,

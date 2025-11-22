@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslationService, LanguageCode } from '../../services/translation.service'; // ✅ استيراد النوع
+import { TranslationService, LanguageCode } from '../../services/translation.service';
+import { LanguageStorageService } from '../../services/language-storage.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -19,7 +20,10 @@ export class LanguageSelectorComponent implements OnInit {
     { code: 'en', name: 'English', flag: '🇬🇧' }
   ];
 
-  constructor(private translationService: TranslationService) {}
+  constructor(
+    private translationService: TranslationService,
+    private languageStorageService: LanguageStorageService
+  ) {}
 
   ngOnInit(): void {
     this.translationService.currentLanguage$.subscribe(lang => {
@@ -28,7 +32,11 @@ export class LanguageSelectorComponent implements OnInit {
   }
 
   changeLanguage(languageCode: LanguageCode): void {
+    // تحديث اللغة في خدمة الترجمة
     this.translationService.setLanguage(languageCode);
+    
+    // حفظ اللغة في التخزين المحلي مع إعادة تحميل الصفحة
+    this.languageStorageService.setLanguage(languageCode);
   }
 
   getCurrentLanguageName(): string {

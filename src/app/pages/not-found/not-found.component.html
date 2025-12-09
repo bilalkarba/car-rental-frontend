@@ -1,14 +1,28 @@
-<div class="not-found-container">
-  <div class="not-found-content">
-    <h1 class="error-code">404</h1>
-    <h2 class="error-title">عذراً، الصفحة التي تبحث عنها غير موجودة</h2>
-    <p class="error-message">يبدو أنك ضللت الطريق قليلاً. دعنا نساعدك في العودة إلى المسار الصحيح.</p>
-    <div class="action-buttons">
-      <button class="btn-primary" routerLink="/">العودة إلى الصفحة الرئيسية</button>
-      <button class="btn-secondary" routerLink="/cars">استعراض السيارات</button>
-    </div>
-    <div class="car-illustration">
-      <img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" alt="سيارة ضائعة" />
+<div class="not-found-container d-flex align-items-center justify-content-center min-vh-100 bg-light text-center section-padding">
+  <div class="container animate-up">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="mb-5">
+          <div class="position-relative d-inline-block">
+            <h1 class="display-1 fw-bold text-primary opacity-25" style="font-size: 10rem;">404</h1>
+            <div class="position-absolute top-50 start-50 translate-middle w-100">
+              <i class="fas fa-car-crash fa-4x text-warning mb-3"></i>
+            </div>
+          </div>
+        </div>
+        
+        <h2 class="fw-bold mb-3 text-dark">{{ 'notFound.title' | translate }}</h2>
+        <p class="text-muted lead mb-5">{{ 'notFound.message' | translate }}</p>
+        
+        <div class="d-flex justify-content-center gap-3">
+          <button class="btn btn-primary rounded-pill px-4 py-3 fw-bold shadow-sm hover-scale" routerLink="/">
+            <i class="fas fa-home me-2"></i> {{ 'home' | translate }}
+          </button>
+          <button class="btn btn-outline-primary rounded-pill px-4 py-3 fw-bold shadow-sm hover-scale" routerLink="/cars">
+            <i class="fas fa-search me-2"></i> {{ 'browseCars' | translate }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

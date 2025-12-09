@@ -1,2 +1,194 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global Styles */
+@use "aos/dist/aos.css";
+@import 'bootstrap/scss/bootstrap';
+
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary-color: #64748b;
+  --accent-color: #f59e0b;
+  --background-color: #f8fafc;
+  --surface-color: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--text-main);
+  letter-spacing: -0.025em;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* Cards */
+.card {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+/* Navbar Override */
+.navbar {
+  background-color: var(--surface-color);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+  
+  .navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+  }
+
+  .nav-link {
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+
+    &:hover, &.active {
+      color: var(--primary-color);
+    }
+  }
+}
+
+/* Utilities */
+.text-gradient {
+  background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hover-white:hover {
+  color: #fff !important;
+  transition: color 0.2s ease;
+}
+
+.section-padding {
+  padding: 4rem 0;
+}
+
+/* Page Header Styles */
+.page-header {
+  height: 300px;
+  background: url('https://images.unsplash.com/photo-1485291571150-772bcfc10da5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center;
+  background-size: cover;
+  margin-top: -76px;
+  padding-top: 76px;
+}
+
+.header-overlay {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
+}
+
+.bg-gradient-dark {
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+
+/* Auth Pages Styles */
+.auth-container {
+  background: url('https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center;
+  background-size: cover;
+  position: relative;
+  margin-top: -76px; /* Offset navbar */
+  padding-top: 76px;
+}
+
+.auth-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(37, 99, 235, 0.4) 100%);
+  backdrop-filter: blur(5px);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  color: var(--primary-color);
+  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.form-floating > .form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
+}
+
+/* Global Animation Styles */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* Hero Section Styles */
+.hero-section {
+  min-height: 100vh;
+  background: url('/assets/images/hero-bg.png') no-repeat center center;
+  background-size: cover;
+  margin-top: -76px; /* Offset navbar */
+  padding-top: 76px;
+}
+
+.hero-overlay {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
+}
 

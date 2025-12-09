@@ -1,9 +1,11 @@
-import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone, Inject } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
-import { TranslationService } from './services/translation.service';
+import { TranslationService, LanguageCode } from './services/translation.service';
 import { takeUntil, Subject } from 'rxjs';
 import { LanguageStorageService } from './services/language-storage.service';
+import { DOCUMENT } from '@angular/common';
+import AOS from 'aos';
 
 @Component({
   selector: 'app-root',
@@ -21,15 +23,27 @@ export class AppComponent implements OnInit {
     private translationService: TranslationService,
     private cd: ChangeDetectorRef,
     private ngZone: NgZone,
-    private languageStorageService: LanguageStorageService
+    private languageStorageService: LanguageStorageService,
+    @Inject(DOCUMENT) private document: Document
   ) {}
 
   ngOnInit(): void {
+    AOS.init({
+      duration: 800,
+      once: true,
+      mirror: false
+    });
+
     // كل مرة تتبدّل اللغة، نحدث العرض مباشرة بلا refresh
     this.translationService.currentLanguage$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
+      .subscribe((lang: LanguageCode) => {
         this.ngZone.run(() => {
+          // Update direction and language
+          const htmlTag = this.document.documentElement;
+          htmlTag.lang = lang;
+          htmlTag.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
           // إجبار تحديث الواجهة بالكامل
           this.cd.detectChanges();
         });

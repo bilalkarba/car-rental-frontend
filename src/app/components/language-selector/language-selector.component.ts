@@ -41,6 +41,6 @@ export class LanguageSelectorComponent implements OnInit {
 
   getCurrentLanguageName(): string {
     const lang = this.languages.find(l => l.code === this.currentLanguage);
-    return lang ? `${lang.flag} ${lang.name}` : '';
+    return lang ? `${lang.flag} ${lang.name}` : '🌐 Language';
   }
 }

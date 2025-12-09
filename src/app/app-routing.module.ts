@@ -16,9 +16,13 @@ import { PaymentCancelComponent } from './pages/payment-cancel/payment-cancel.co
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DashboardRealtimeComponent } from './pages/admin/dashboard-realtime/dashboard-realtime.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { SuperAdminDashboardComponent } from './pages/super-admin/dashboard/super-admin-dashboard.component';
+import { AgencyDetailsComponent } from './pages/super-admin/agency-details/agency-details.component';
+import { superAdminGuard } from './guards/super-admin.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'cars', component: CarsComponent },
@@ -32,6 +36,8 @@ const routes: Routes = [
   { path: 'payment', component: PaymentComponent , canActivate: [authGuard] },
   { path: 'payment-success', component: PaymentSuccessComponent , canActivate: [authGuard] },
   { path: 'payment-cancel', component: PaymentCancelComponent , canActivate: [authGuard] },
+  { path: 'super-admin-dashboard', component: SuperAdminDashboardComponent, canActivate: [authGuard, superAdminGuard] },
+  { path: 'super-admin/agency/:id', component: AgencyDetailsComponent, canActivate: [authGuard, superAdminGuard] },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', component: NotFoundComponent }
 ];

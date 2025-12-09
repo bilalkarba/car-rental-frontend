@@ -1,63 +1,28 @@
-<div class="payment-success-container">
-  <div class="success-card" *ngIf="!isLoading && !errorMessage; else loadingOrError">
-    <div class="success-icon">
-      <i class="fas fa-check-circle"></i>
-    </div>
-    <h2>{{ 'paypal.success' | translate }}</h2>
-    <p>{{ 'paymentConfirmed' | translate }}</p>
+<div class="booking-details" *ngIf="booking">
+  <h3>{{ 'bookingDetails' | translate }}</h3>
 
-    <div class="booking-details" *ngIf="booking">
-      <h3>{{ 'bookingDetails' | translate }}</h3>
-      <div class="detail-item">
-        <span>{{ 'bookingNumber' | translate }}:</span>
-        <span>{{ booking._id }}</span>
-      </div>
-      <div class="detail-item">
-        <span>{{ 'car' | translate }}:</span>
-        <span>{{ booking.carId.brand }} {{ booking.carId.model }}</span>
-      </div>
-      <div class="detail-item">
-        <span>{{ 'startDate' | translate }}:</span>
-        <span>{{ booking.startDate | date:'shortDate' }}</span>
-      </div>
-      <div class="detail-item">
-        <span>{{ 'endDate' | translate }}:</span>
-        <span>{{ booking.endDate | date:'shortDate' }}</span>
-      </div>
-      <div class="detail-item">
-        <span>{{ 'totalPrice' | translate }}:</span>
-        <span>{{ booking.totalAmount }} MAD</span>
-      </div>
-    </div>
-
-    <div class="action-buttons">
-      <button class="btn btn-primary" (click)="goToBookings()">
-        <i class="fas fa-list"></i> {{ 'bookings.title' | translate }}
-      </button>
-      <button class="btn btn-secondary" (click)="goToHome()">
-        <i class="fas fa-home"></i> {{ 'backToHome' | translate }}
-      </button>
-      <button class="btn btn-success" (click)="downloadReceipt()">
-      <i class="fas fa-download"></i> {{ 'downloadReceipt' | translate }}
-      </button>
-
-    </div>
+  <div class="detail-item">
+    <span>{{ 'renterName' | translate }}:</span>
+    <span>{{ booking.user?.name || booking.userId?.name }}</span>
   </div>
 
-  <ng-template #loadingOrError>
-    <div class="loading-or-error">
-      <div *ngIf="isLoading" class="loading">
-        <div class="spinner"></div>
-        <p>{{ 'paypal.processing' | translate }}</p>
-      </div>
+  <div class="detail-item">
+    <span>{{ 'car' | translate }}:</span>
+    <span>{{ booking.carId.brand }} {{ booking.carId.model }}</span>
+  </div>
 
-      <div *ngIf="errorMessage" class="error-message">
-        <i class="fas fa-exclamation-triangle"></i>
-        <p>{{ errorMessage }}</p>
-        <button class="btn btn-primary" (click)="goToHome()">
-          <i class="fas fa-home"></i> {{ 'backToHome' | translate }}
-        </button>
-      </div>
-    </div>
-  </ng-template>
+  <div class="detail-item">
+    <span>{{ 'startDate' | translate }}:</span>
+    <span>{{ booking.startDate | date:'shortDate' }}</span>
+  </div>
+
+  <div class="detail-item">
+    <span>{{ 'endDate' | translate }}:</span>
+    <span>{{ booking.endDate | date:'shortDate' }}</span>
+  </div>
+
+  <div class="detail-item">
+    <span>{{ 'totalPrice' | translate }}:</span>
+    <span>{{ booking.totalAmount }} MAD</span>
+  </div>
 </div>

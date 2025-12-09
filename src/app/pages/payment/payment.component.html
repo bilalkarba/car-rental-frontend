@@ -1,43 +1,81 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-header bg-primary text-white">
-          <h4>{{ 'paymentDetails' | translate }}</h4>
+<div class="payment-page section-padding bg-light min-vh-100">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 animate-up">
+        <div class="text-center mb-5">
+          <h2 class="fw-bold text-dark">{{ 'checkout.title' | translate }}</h2>
+          <p class="text-muted">{{ 'checkout.subtitle' | translate }}</p>
         </div>
-        <div class="card-body">
-          <div *ngIf="errorMessage" class="alert alert-danger">
-            {{ errorMessage }}
-          </div>
 
-          <div *ngIf="car" class="mb-4">
-            <h5>{{ 'carDetails' | translate }}</h5>
-            <div class="row">
-              <div class="col-md-4">
-                <img [src]="car.image" class="img-fluid rounded" alt="{{ car.brand }} {{ car.model }}">
+        <div class="card border-0 shadow-lg overflow-hidden">
+          <div class="card-header bg-primary text-white p-4 border-0">
+            <div class="d-flex align-items-center">
+              <div class="icon-box bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                <i class="fas fa-credit-card"></i>
               </div>
-              <div class="col-md-8">
-                <h6>{{ car.brand }} {{ car.model }}</h6>
-                <p><strong>{{ 'pricePerDay' | translate }}:</strong> {{ car.pricePerDay }} {{ 'currency.dh' | translate }}</p>
-                <p><strong>{{ 'fuelType' | translate }}:</strong> {{ car.fuel }}</p>
-                <p><strong>{{ 'carType' | translate }}:</strong> {{ car.type }}</p>
-              </div>
+              <h5 class="mb-0 fw-bold">{{ 'paymentDetails' | translate }}</h5>
             </div>
           </div>
+          
+          <div class="card-body p-4 p-md-5">
+            <div *ngIf="errorMessage" class="alert alert-danger rounded-3 mb-4">
+              <i class="fas fa-exclamation-circle me-2"></i> {{ errorMessage }}
+            </div>
 
-          <div *ngIf="bookingData" class="mb-4">
-            <h5>{{ 'bookingDetails' | translate }}</h5>
-            <p><strong>{{ 'startDate' | translate }}:</strong> {{ bookingData.startDate | date:'dd/MM/yyyy' }}</p>
-            <p><strong>{{ 'endDate' | translate }}:</strong> {{ bookingData.endDate | date:'dd/MM/yyyy' }}</p>
-            <p><strong>{{ 'totalPrice' | translate }}:</strong> {{ bookingData.totalAmount }} {{ 'currency.dh' | translate }}</p>
-          </div>
+            <div class="row g-4 mb-5">
+              <!-- Car Summary -->
+              <div class="col-md-6">
+                <h6 class="text-muted fw-bold mb-3 text-uppercase small">{{ 'carDetails' | translate }}</h6>
+                <div class="d-flex align-items-start" *ngIf="car">
+                  <img [src]="car.image" class="rounded shadow-sm me-3" alt="{{ car.brand }}" style="width: 80px; height: 60px; object-fit: cover;">
+                  <div>
+                    <h6 class="fw-bold mb-1">{{ car.brand }} {{ car.model }}</h6>
+                    <div class="text-muted small mb-1">{{ car.type }} • {{ car.fuel }}</div>
+                    <div class="text-primary fw-bold small">{{ car.pricePerDay }} {{ 'currency.dh' | translate }}/{{ 'day' | translate }}</div>
+                  </div>
+                </div>
+              </div>
 
-          <div class="d-flex justify-content-between">
-            <button class="btn btn-secondary" (click)="cancel()">{{ 'cancel' | translate }}</button>
-            <button class="btn btn-primary" (click)="createBookingAndPay()" [disabled]="loading">
-              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
-              {{ 'paypal.payment' | translate }}
-            </button>
+              <!-- Booking Summary -->
+              <div class="col-md-6">
+                <h6 class="text-muted fw-bold mb-3 text-uppercase small">{{ 'bookingDetails' | translate }}</h6>
+                <div *ngIf="bookingData" class="bg-light rounded p-3">
+                  <div class="d-flex justify-content-between mb-2 small">
+                    <span class="text-muted">{{ 'startDate' | translate }}</span>
+                    <span class="fw-bold">{{ bookingData.startDate | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2 small">
+                    <span class="text-muted">{{ 'endDate' | translate }}</span>
+                    <span class="fw-bold">{{ bookingData.endDate | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                  <div class="border-top my-2"></div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">{{ 'totalPrice' | translate }}</span>
+                    <span class="fw-bold text-primary fs-5">{{ bookingData.totalAmount }} {{ 'currency.dh' | translate }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Actions -->
+            <div class="d-grid gap-3">
+              <button class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-sm hover-scale" 
+                      (click)="createBookingAndPay()" 
+                      [disabled]="loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                <i class="fab fa-paypal me-2" *ngIf="!loading"></i>
+                {{ 'paypal.payment' | translate }}
+              </button>
+              <button class="btn btn-outline-secondary rounded-pill py-2 fw-bold" (click)="cancel()">
+                {{ 'cancel' | translate }}
+              </button>
+            </div>
+            
+            <div class="text-center mt-4">
+              <small class="text-muted">
+                <i class="fas fa-lock me-1"></i> {{ 'securePayment' | translate }}
+              </small>
+            </div>
           </div>
         </div>
       </div>

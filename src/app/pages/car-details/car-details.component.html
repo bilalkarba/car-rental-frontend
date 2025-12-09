@@ -1,177 +1,182 @@
-<div class="car-details" *ngIf="car">
+<div class="car-details-page section-padding bg-light" *ngIf="car">
   <div class="container">
-
-    <!-- عنوان السيارة -->
-    <div class="car-header">
-      <div class="car-title-section">
-        <h1>{{ car.brand }} {{ car.model }}</h1>
-        <div class="car-rating" *ngIf="car.rating">
-          <div class="stars">
-            <i class="fas fa-star" *ngFor="let star of [].constructor(car.rating); let i = index"></i>
-            <i class="far fa-star" *ngFor="let star of [].constructor(5 - car.rating)"></i>
-          </div>
-          <span class="rating-value">{{ car.rating }}/5</span>
-        </div>
-      </div>
-      <div class="car-badges">
-        <span class="year-badge">{{ car.year }}</span>
-        <span class="category-badge" *ngIf="car.category">{{ car.category }}</span>
-        <span class="feature-badge" *ngIf="car.featured">{{ translationService.translate('featured') }}</span>
-      </div>
-    </div>
-    
-    <!-- وصف السيارة -->
-    <div class="car-description" *ngIf="car.description">
-      <h3>{{ translationService.translate('description') }}</h3>
-      <p>{{ car.description }}</p>
-    </div>
-
-    <!-- معرض صور السيارة -->
-    <div class="car-gallery">
-      <div class="main-image-container">
-        <img [src]="currentImage || car.image" alt="{{ car.model }}" class="car-img" />
-        <div class="image-overlay">
-          <div class="price-tag">
-            {{ car.pricePerDay }} MAD
-            <span>{{ translationService.translate('car.pricePerDay') }}</span>
+    <!-- Breadcrumb & Title -->
+    <div class="d-flex justify-content-between align-items-center mb-4 animate-up">
+      <div>
+        <h1 class="display-5 fw-bold text-dark mb-1">{{ car.brand }} {{ car.model }}</h1>
+        <div class="d-flex align-items-center gap-3 text-muted">
+          <span class="badge bg-primary rounded-pill px-3">{{ car.category || 'Luxury' }}</span>
+          <span><i class="fas fa-calendar me-1"></i> {{ car.year }}</span>
+          <div class="text-warning" *ngIf="car.rating">
+            <i class="fas fa-star"></i> {{ car.rating }}/5
           </div>
         </div>
       </div>
-      
-      <!-- مصغرات الصور الإضافية -->
-      <div class="thumbnail-container" *ngIf="car.additionalImages && car.additionalImages.length > 0">
-        <div class="thumbnail" 
-             *ngFor="let img of getAllImages()" 
-             [class.active]="currentImage === img"
-             (click)="currentImage = img">
-          <img [src]="img" alt="{{ car.model }}" />
-        </div>
+      <div class="text-end">
+        <h2 class="text-primary fw-bold mb-0">{{ car.pricePerDay }} {{ translationService.translate('currency.dh') }}</h2>
+        <small class="text-muted">{{ translationService.translate('car.pricePerDay') }}</small>
       </div>
     </div>
 
-    <!-- معلومات السيارة -->
-    <div class="car-info">
-      <div class="info-grid">
-        <div class="info-item">
-          <i class="fas fa-tachometer-alt"></i>
-          <span>{{ translationService.translate('car.plate') }}: {{ car.plateNumber }}</span>
+    <div class="row g-4">
+      <!-- Left Column: Gallery & Info -->
+      <div class="col-lg-8 animate-up delay-1">
+        <!-- Gallery -->
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+          <div class="position-relative">
+            <img [src]="currentImage || car.image" alt="{{ car.model }}" class="w-100 object-fit-cover" style="height: 500px;">
+            <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-gradient-dark text-white" *ngIf="car.additionalImages?.length">
+              <div class="d-flex gap-2 overflow-auto custom-scrollbar">
+                <img [src]="car.image" 
+                     class="rounded border border-2 border-white cursor-pointer hover-scale" 
+                     style="width: 80px; height: 60px; object-fit: cover;"
+                     (click)="currentImage = car.image"
+                     [class.opacity-50]="currentImage && currentImage !== car.image">
+                <img *ngFor="let img of car.additionalImages" 
+                     [src]="img" 
+                     class="rounded border border-2 border-white cursor-pointer hover-scale" 
+                     style="width: 80px; height: 60px; object-fit: cover;"
+                     (click)="currentImage = img"
+                     [class.opacity-50]="currentImage !== img">
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="info-item">
-          <i class="fas fa-gas-pump"></i>
-          <span>{{ translationService.translate('fuelType') }}: {{ car.fuel }}</span>
-        </div>
-        <div class="info-item">
-          <i class="fas fa-cogs"></i>
-          <span>{{ translationService.translate('carType') }}: {{ car.type }}</span>
-        </div>
-        <div class="info-item">
-          <i class="fas fa-calendar-alt"></i>
-          <span>
-            {{ isCurrentlyAvailable
-              ? translationService.translate('carDetails.available')
-              : translationService.translate('car.notAvailable')
-            }}
-          </span>
-        </div>
-        <div class="info-item">
-          <i class="fas fa-users"></i>
-          <span>{{ translationService.translate('seats') }}: {{ car.seats || '5' }}</span>
-        </div>
-        <div class="info-item">
-          <i class="fas fa-suitcase"></i>
-          <span>{{ translationService.translate('luggage') }}: {{ car.luggage || '2' }}</span>
-        </div>
-        <div class="info-item">
-          <i class="fas fa-car-side"></i>
-          <span>{{ translationService.translate('transmission') }}: {{ car.transmission || 'Manual' }}</span>
-        </div>
-        <div class="info-item">
-          <i class="fas fa-wind"></i>
-          <span>{{ translationService.translate('airConditioning') }}: {{ car.airConditioning ? translationService.translate('yes') : translationService.translate('no') }}</span>
+
+        <!-- Specs Grid -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h4 class="fw-bold mb-4">{{ translationService.translate('description') }}</h4>
+            <div class="row g-3 mb-4">
+              <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                  <i class="fas fa-tachometer-alt text-primary fa-2x mb-2"></i>
+                  <div class="small text-muted">{{ translationService.translate('car.plate') }}</div>
+                  <div class="fw-bold">{{ car.plateNumber }}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                  <i class="fas fa-gas-pump text-primary fa-2x mb-2"></i>
+                  <div class="small text-muted">{{ translationService.translate('fuelType') }}</div>
+                  <div class="fw-bold">{{ car.fuel }}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                  <i class="fas fa-cogs text-primary fa-2x mb-2"></i>
+                  <div class="small text-muted">{{ translationService.translate('carType') }}</div>
+                  <div class="fw-bold">{{ car.type }}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                  <i class="fas fa-users text-primary fa-2x mb-2"></i>
+                  <div class="small text-muted">{{ translationService.translate('seats') }}</div>
+                  <div class="fw-bold">{{ car.seats || '5' }}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                  <i class="fas fa-suitcase text-primary fa-2x mb-2"></i>
+                  <div class="small text-muted">{{ translationService.translate('luggage') }}</div>
+                  <div class="fw-bold">{{ car.luggage || '2' }}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                  <i class="fas fa-car-side text-primary fa-2x mb-2"></i>
+                  <div class="small text-muted">{{ translationService.translate('transmission') }}</div>
+                  <div class="fw-bold">{{ car.transmission || 'Manual' }}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                  <i class="fas fa-wind text-primary fa-2x mb-2"></i>
+                  <div class="small text-muted">{{ translationService.translate('airConditioning') }}</div>
+                  <div class="fw-bold">{{ car.airConditioning ? translationService.translate('yes') : translationService.translate('no') }}</div>
+                </div>
+              </div>
+            </div>
+            
+            <h5 class="fw-bold mb-3">{{ translationService.translate('carDetails.aboutCar') || 'About this car' }}</h5>
+            <p class="text-muted">{{ car.description }}</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- نموذج اختيار التواريخ -->
-    <div class="rental-form">
-      <h3>{{ translationService.translate('car.selectDates') }}</h3>
+      <!-- Right Column: Booking Form -->
+      <div class="col-lg-4 animate-up delay-2">
+        <div class="card border-0 shadow-lg sticky-top" style="top: 100px; z-index: 10;">
+          <div class="card-body p-4">
+            <h4 class="fw-bold mb-4">{{ translationService.translate('car.selectDates') }}</h4>
+            
+            <div class="mb-3">
+              <label class="form-label text-muted small fw-bold">{{ translationService.translate('car.startDate') }}</label>
+              <input type="datetime-local" class="form-control rounded-pill" [(ngModel)]="startDate" (change)="checkDatesOverlap()">
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label text-muted small fw-bold">{{ translationService.translate('endDate') }}</label>
+              <input type="datetime-local" class="form-control rounded-pill" [(ngModel)]="endDate" (change)="checkDatesOverlap()">
+            </div>
 
-      <div class="date-inputs">
-        <div class="date-input-group">
-          <label for="start-date">{{ translationService.translate('car.startDate') }}</label>
-         <input
-  type="datetime-local"
-  id="start-date"
-  [(ngModel)]="startDate"
-  (change)="checkDatesOverlap()"
-/>
-        </div>
+            <!-- Availability Alerts -->
+            <div *ngIf="!isCurrentlyAvailable && !startDate && !endDate" class="alert alert-warning rounded-3 mb-3">
+              <div class="d-flex gap-2">
+                <i class="fas fa-exclamation-triangle mt-1"></i>
+                <div>
+                  <strong>{{ translationService.translate('carStatus.booked') }}</strong>
+                  <div *ngIf="getLastBookingEndDate()" class="small mt-1">
+                    {{ translationService.translate('carStatus.availableAfter') || 'Available after' }}: {{ getFormattedAvailableDate() }}
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <div class="date-input-group">
-          <label for="end-date">{{ translationService.translate('endDate') }}</label>
-          <input
-  type="datetime-local"
-  id="end-date"
-  [(ngModel)]="endDate"
-  (change)="checkDatesOverlap()"
-/>
+            <div *ngIf="!isCarAvailable && startDate && endDate" class="alert alert-danger rounded-3 mb-3">
+              <div class="d-flex gap-2">
+                <i class="fas fa-times-circle mt-1"></i>
+                <div>
+                  <strong>{{ translationService.translate('carStatus.datesNotAvailable') || 'Selected dates are not available' }}</strong>
+                  <div *ngIf="nextAvailableDate" class="small mt-1">
+                    {{ translationService.translate('carStatus.tryAfter') || 'Try after' }}: {{ nextAvailableDate | date:'dd/MM/yyyy' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Price Summary -->
+            <div class="bg-light rounded p-3 mb-4" *ngIf="startDate && endDate && isCarAvailable">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">{{ translationService.translate('dailyRate') }}</span>
+                <span class="fw-bold">{{ car.pricePerDay }} {{ translationService.translate('currency.dh') }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">{{ translationService.translate('rentalDuration') }}</span>
+                <span class="fw-bold">{{ calculateRentalDays() }} {{ translationService.translate('days') }}</span>
+              </div>
+              <div class="border-top my-2"></div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold fs-5">{{ translationService.translate('totalPrice') }}</span>
+                <span class="fw-bold fs-4 text-primary">{{ calculateTotalPrice() }} {{ translationService.translate('currency.dh') }}</span>
+              </div>
+            </div>
+
+            <button class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm hover-scale" 
+                    (click)="rentCar()"
+                    [disabled]="!isCurrentlyAvailable || (!isCarAvailable && startDate && endDate)">
+              <i class="fas fa-check-circle me-2"></i> {{ translationService.translate('book') }}
+            </button>
+          </div>
         </div>
       </div>
-
-      <!-- السيارة غير متاحة بشكل عام -->
-      <div *ngIf="!isCurrentlyAvailable && !startDate && !endDate" class="alert alert-warning mt-3">
-        <i class="fas fa-exclamation-triangle"></i>
-        <span>
-          {{ translationService.translate('carStatus.booked') }}
-        </span>
-        <span *ngIf="getLastBookingEndDate()" class="d-block mt-2">
-          📅 {{ translationService.translate('carStatus.availableAfter') }}:
-          {{ getFormattedAvailableDate() }}
-        </span>
-      </div>
-
-      <!-- السيارة غير متاحة للتواريخ المختارة -->
-      <div *ngIf="!isCarAvailable && startDate && endDate" class="alert alert-warning mt-3">
-        <i class="fas fa-exclamation-triangle"></i>
-        {{ translationService.translate('carStatus.booked') }}
-
-        <span *ngIf="nextAvailableDate" class="d-block mt-2">
-          📅 {{ translationService.translate('carStatus.availableAfter') }}:
-          {{ nextAvailableDate | date:'dd/MM/yyyy' }}
-        </span>
-      </div>
-
-      <!-- زر الحجز -->
-      <div class="price-summary" *ngIf="startDate && endDate && isCarAvailable">
-        <div class="price-item">
-          <span>{{ translationService.translate('dailyRate') }}:</span>
-          <span>{{ car.pricePerDay }} {{ translationService.translate('currency.dh') }}</span>
-        </div>
-        <div class="price-item">
-          <span>{{ translationService.translate('rentalDuration') }}:</span>
-          <span>{{ calculateRentalDays() }} {{ translationService.translate('days') }}</span>
-        </div>
-        <div class="price-item total">
-          <span>{{ translationService.translate('totalPrice') }}:</span>
-          <span>{{ calculateTotalPrice() }} {{ translationService.translate('currency.dh') }}</span>
-        </div>
-      </div>
-      
-      <button
-        (click)="rentCar()"
-        class="btn btn-primary"
-        [disabled]="!isCurrentlyAvailable || (!isCarAvailable && startDate && endDate)"
-      >
-        <i class="fas fa-car"></i>
-        {{ translationService.translate('book') }}
-      </button>
-
     </div>
   </div>
 </div>
 
-<!-- شاشة التحميل -->
-<div *ngIf="!car" class="loading">
-  <div class="spinner"></div>
-  <p>{{ translationService.translate('loading') }}</p>
+<div *ngIf="!car" class="d-flex align-items-center justify-content-center min-vh-100">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">{{ translationService.translate('loading') }}</span>
+  </div>
 </div>

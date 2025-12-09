@@ -69,6 +69,16 @@
       </div>
 
       <div class="form-group">
+        <label for="cinFront">{{ 'National ID Front' | translate }}</label>
+        <input type="file" id="cinFront" (change)="onFileSelect($event, 'cinFront')" class="form-control" accept="image/*">
+      </div>
+
+      <div class="form-group">
+        <label for="cinBack">{{ 'National ID Back' | translate }}</label>
+        <input type="file" id="cinBack" (change)="onFileSelect($event, 'cinBack')" class="form-control" accept="image/*">
+      </div>
+
+      <div class="form-group">
         <label for="role">{{ 'role' | translate }}</label>
         <select
           id="role"

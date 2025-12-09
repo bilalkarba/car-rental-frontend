@@ -1,103 +1,144 @@
-<div class="add-car-container">
-  <div class="form-card">
-    <div class="form-header">
-      <button class="btn btn-secondary back-btn" (click)="goBack()">
-        <i class="fas fa-arrow-right"></i> {{ 'back' | translate }}
-      </button>
-      <h2>{{ 'carForm.addCarTitle' | translate }}</h2>
-    </div>
-
-    <form [formGroup]="carForm" (ngSubmit)="onSubmit()" class="car-form" enctype="multipart/form-data" novalidate>
-      <div class="form-group image-upload">
-        <label>{{ 'carImage' | translate }}</label>
-        <div class="image-preview-container" (click)="triggerFileUpload()">
-          <img *ngIf="imagePreview" [src]="imagePreview" alt="Car preview" class="image-preview">
-          <div *ngIf="!imagePreview" class="image-placeholder">
-            <i class="fas fa-camera"></i>
-            <span>{{ 'chooseImage' | translate }}</span>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-lg rounded-lg overflow-hidden" data-aos="fade-up">
+        <div class="card-header bg-primary text-white p-4 position-relative overflow-hidden">
+          <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-10"></div>
+          <div class="d-flex justify-content-between align-items-center position-relative z-1">
+            <h2 class="mb-0 fw-bold text-white"><i class="fas fa-plus-circle me-2"></i>{{ 'carForm.addCarTitle' | translate }}</h2>
+            <button class="btn btn-light btn-sm rounded-pill fw-bold text-primary shadow-sm hover-scale" (click)="goBack()">
+              <i class="fas fa-arrow-left me-1"></i> {{ 'back' | translate }}
+            </button>
           </div>
         </div>
-        <input type="file" (change)="onImageSelected($event)" accept="image/*" class="image-input" id="car-image">
-      </div>
+        
+        <div class="card-body p-5 bg-light">
+          <form [formGroup]="carForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data" novalidate>
+            
+            <!-- Image Upload -->
+            <div class="mb-5 text-center">
+              <label class="form-label fw-bold text-muted mb-3">{{ 'carImage' | translate }}</label>
+              <div class="image-upload-container mx-auto shadow-sm rounded-lg overflow-hidden position-relative bg-white" 
+                   style="width: 100%; max-width: 400px; height: 250px; cursor: pointer; border: 2px dashed #cbd5e1; transition: all 0.3s ease;"
+                   (click)="triggerFileUpload()"
+                   [class.border-primary]="imagePreview">
+                <img *ngIf="imagePreview" [src]="imagePreview" alt="Car preview" class="w-100 h-100 object-fit-cover">
+                <div *ngIf="!imagePreview" class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                  <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary opacity-50"></i>
+                  <span class="fw-medium">{{ 'chooseImage' | translate }}</span>
+                  <small class="opacity-75 mt-1">Click to browse</small>
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-50 text-white py-2 small opacity-0 hover-opacity-100 transition-opacity">
+                  Change Image
+                </div>
+              </div>
+              <input type="file" #fileInput (change)="onImageSelected($event)" accept="image/*" class="d-none" id="car-image">
+            </div>
 
-      <div class="form-group">
-        <label for="brand">{{ 'brand' | translate }}</label>
-        <input id="brand" type="text" formControlName="brand" class="form-control"
-               [class.is-invalid]="carForm.get('brand')?.invalid && carForm.get('brand')?.touched"/>
-        <div class="invalid-feedback" *ngIf="carForm.get('brand')?.invalid && carForm.get('brand')?.touched">
-          {{ 'brandRequired' | translate }}
+            <div class="row g-4">
+              <!-- Brand -->
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" id="brand" formControlName="brand" class="form-control rounded-pill" placeholder="Brand"
+                         [class.is-invalid]="carForm.get('brand')?.invalid && carForm.get('brand')?.touched"/>
+                  <label for="brand">{{ 'brand' | translate }}</label>
+                  <div class="invalid-feedback ps-3">
+                    {{ 'brandRequired' | translate }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Model -->
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" id="model" formControlName="model" class="form-control rounded-pill" placeholder="Model"
+                         [class.is-invalid]="carForm.get('model')?.invalid && carForm.get('model')?.touched"/>
+                  <label for="model">{{ 'model' | translate }}</label>
+                  <div class="invalid-feedback ps-3">
+                    {{ 'modelRequired' | translate }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Plate Number -->
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" id="plateNumber" formControlName="plateNumber" class="form-control rounded-pill" placeholder="Plate Number"
+                         [class.is-invalid]="carForm.get('plateNumber')?.invalid && carForm.get('plateNumber')?.touched"/>
+                  <label for="plateNumber">{{ 'plate' | translate }}</label>
+                  <div class="invalid-feedback ps-3">
+                    {{ 'plateRequired' | translate }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Price -->
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="number" id="pricePerDay" formControlName="pricePerDay" class="form-control rounded-pill" placeholder="Price"
+                         [class.is-invalid]="carForm.get('pricePerDay')?.invalid && carForm.get('pricePerDay')?.touched"/>
+                  <label for="pricePerDay">{{ 'price' | translate }}</label>
+                  <div class="invalid-feedback ps-3">
+                    <span *ngIf="carForm.get('pricePerDay')?.errors?.['required']">{{ 'priceRequired' | translate }}</span>
+                    <span *ngIf="carForm.get('pricePerDay')?.errors?.['min']">{{ 'priceMin' | translate }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fuel Type -->
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <select id="fuel" formControlName="fuel" class="form-select rounded-pill" 
+                          [class.is-invalid]="carForm.get('fuel')?.invalid && carForm.get('fuel')?.touched">
+                    <option value="" disabled selected>{{ 'chooseFuel' | translate }}</option>
+                    <option value="Essence">{{ 'Essence' | translate }}</option>
+                    <option value="Diesel">{{ 'Diesel' | translate }}</option>
+                    <option value="Hybride">{{ 'Hybride' | translate }}</option>
+                  </select>
+                  <label for="fuel">{{ 'fuelType' | translate }}</label>
+                  <div class="invalid-feedback ps-3">
+                    {{ 'fuelRequired' | translate }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Car Type -->
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <select id="type" formControlName="type" class="form-select rounded-pill" 
+                          [class.is-invalid]="carForm.get('type')?.invalid && carForm.get('type')?.touched">
+                    <option value="" disabled selected>{{ 'chooseType' | translate }}</option>
+                    <option value="Manuelle">{{ 'Manuelle' | translate }}</option>
+                    <option value="Automatique">{{ 'Automatique' | translate }}</option>
+                    <option value="SUV">{{ 'SUV' | translate }}</option>
+                    <option value="4x4">{{ '4x4' | translate }}</option>
+                  </select>
+                  <label for="type">{{ 'carType' | translate }}</label>
+                  <div class="invalid-feedback ps-3">
+                    {{ 'typeRequired' | translate }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Availability Checkbox -->
+              <div class="col-12">
+                <div class="form-check form-switch ps-5">
+                  <input class="form-check-input" type="checkbox" id="available" formControlName="available" style="transform: scale(1.5);">
+                  <label class="form-check-label ms-2 pt-1 fw-bold text-muted" for="available">{{ 'available' | translate }}</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-grid mt-5">
+              <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-md hover-lift" [disabled]="isLoading">
+                <span *ngIf="!isLoading"><i class="fas fa-save me-2"></i>{{ 'addCarBtn' | translate }}</span>
+                <span *ngIf="isLoading"><i class="fas fa-spinner fa-spin me-2"></i>{{ 'loading' | translate }}</span>
+              </button>
+            </div>
+
+          </form>
         </div>
       </div>
-
-      <div class="form-group">
-        <label for="model">{{ 'model' | translate }}</label>
-        <input id="model" type="text" formControlName="model" class="form-control"
-               [class.is-invalid]="carForm.get('model')?.invalid && carForm.get('model')?.touched"/>
-        <div class="invalid-feedback" *ngIf="carForm.get('model')?.invalid && carForm.get('model')?.touched">
-          {{ 'modelRequired' | translate }}
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="plateNumber">{{ 'plate' | translate }}</label>
-        <input id="plateNumber" type="text" formControlName="plateNumber" class="form-control"
-               [class.is-invalid]="carForm.get('plateNumber')?.invalid && carForm.get('plateNumber')?.touched"/>
-        <div class="invalid-feedback" *ngIf="carForm.get('plateNumber')?.invalid && carForm.get('plateNumber')?.touched">
-          {{ 'plateRequired' | translate }}
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="pricePerDay">{{ 'price' | translate }}</label>
-        <input id="pricePerDay" type="number" formControlName="pricePerDay" class="form-control"
-               [class.is-invalid]="carForm.get('pricePerDay')?.invalid && carForm.get('pricePerDay')?.touched"/>
-        <div class="invalid-feedback" *ngIf="carForm.get('pricePerDay')?.invalid && carForm.get('pricePerDay')?.touched">
-          <span *ngIf="carForm.get('pricePerDay')?.errors?.['required']">{{ 'priceRequired' | translate }}</span>
-          <span *ngIf="carForm.get('pricePerDay')?.errors?.['min']">{{ 'priceMin' | translate }}</span>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="checkbox-label">
-          <input type="checkbox" formControlName="available" class="form-check-input"/>
-          <span class="checkmark"></span>
-          {{ 'available' | translate }}
-        </label>
-      </div>
-      <!-- Type de carburant -->
-<div class="form-group">
-  <label for="fuel">{{ 'fuelType' | translate }}</label>
-  <select id="fuel" formControlName="fuel" class="form-control" [class.is-invalid]="carForm.get('fuel')?.invalid && carForm.get('fuel')?.touched">
-    <option value="">{{ 'chooseFuel' | translate }}</option>
-    <option value="Essence">{{ 'Essence' | translate }}</option>
-    <option value="Diesel">{{ 'Diesel' | translate }}</option>
-    <option value="Hybride">{{ 'Hybride' | translate }}</option>
-  </select>
-  <div class="invalid-feedback" *ngIf="carForm.get('fuel')?.invalid && carForm.get('fuel')?.touched">
-    {{ 'fuelRequired' | translate }}
-  </div>
-</div>
-
-<!-- Type de voiture -->
-<div class="form-group">
-  <label for="type">{{ 'carType' | translate }}</label>
-  <select id="type" formControlName="type" class="form-control" [class.is-invalid]="carForm.get('type')?.invalid && carForm.get('type')?.touched">
-    <option value="">{{ 'chooseType' | translate }}</option>
-    <option value="Manuelle">{{ 'Manuelle' | translate }}</option>
-    <option value="Automatique">{{ 'Automatique' | translate }}</option>
-    <option value="SUV">{{ 'SUV' | translate }}</option>
-    <option value="4x4">{{ '4x4' | translate }}</option>
-  </select>
-  <div class="invalid-feedback" *ngIf="carForm.get('type')?.invalid && carForm.get('type')?.touched">
-    {{ 'typeRequired' | translate }}
-  </div>
-</div>
-
-
-      <button type="submit" class="btn btn-primary submit-btn" [disabled]="isLoading">
-        <span *ngIf="!isLoading">{{ 'addCarBtn' | translate }}</span>
-        <span *ngIf="isLoading">{{ 'loading' | translate }}</span>
-      </button>
-    </form>
+    </div>
   </div>
 </div>

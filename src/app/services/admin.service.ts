@@ -52,7 +52,11 @@ export class AdminService {
 
   // ✏️ تعديل سيارة
   updateCar(id: string, carData: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/cars/${id}`, carData, this.getHeaders());
+    const token = localStorage.getItem('auth_token');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.put(`${this.apiUrl}/cars/${id}`, carData, { headers });
   }
 
   // ➕ إضافة سيارة جديدة
@@ -75,7 +79,13 @@ export class AdminService {
   }
 
   // 👤 إضافة مشرف جديد
+  // 👤 إضافة مشرف جديد
   addAdmin(adminData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/register`, adminData, this.getHeaders());
+    return this.http.post(`${this.apiUrl}/auth/register`, adminData, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        // Content-Type must be undefined for FormData
+      })
+    });
   }
 }

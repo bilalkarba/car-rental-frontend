@@ -1,35 +1,51 @@
-<div class="login-container">
-  <div class="login-form">
-    <h2>{{ 'login.title' | translate }}</h2>
-    
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="email">{{ 'login.email' | translate }}</label>
-        <input id="email" type="email" formControlName="email" class="form-control" 
-               [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" />
-        <div class="invalid-feedback" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-          {{ 'login.emailInvalid' | translate }}
+<div class="auth-container d-flex align-items-center justify-content-center min-vh-100">
+  <div class="auth-overlay"></div>
+  <div class="card auth-card border-0 shadow-lg animate-up">
+    <div class="card-body p-5">
+      <div class="text-center mb-4">
+        <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+          <i class="fas fa-user-circle fa-2x"></i>
         </div>
+        <h2 class="fw-bold text-dark">{{ 'login.title' | translate }}</h2>
+        <p class="text-muted small">{{ 'Welcome back! Please login to your account.' | translate }}</p>
       </div>
-
-      <div class="form-group">
-        <label for="password">{{ 'login.password' | translate }}</label>
-        <input id="password" type="password" formControlName="password" class="form-control"
-               [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
-        <div class="invalid-feedback" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-          <span *ngIf="loginForm.get('password')?.errors?.['required']">{{ 'login.passwordRequired' | translate }}</span>
-          <span *ngIf="loginForm.get('password')?.errors?.['minlength']">{{ 'login.passwordMin' | translate }}</span>
+      
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-floating mb-3">
+          <input id="email" type="email" formControlName="email" class="form-control rounded-pill" placeholder="name@example.com"
+                 [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" />
+          <label for="email" class="ps-4">{{ 'login.email' | translate }}</label>
+          <div class="invalid-feedback ps-4" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            {{ 'login.emailInvalid' | translate }}
+          </div>
         </div>
-      </div>
 
-      <div class="error-message" *ngIf="error">
-        {{ error }}
-      </div>
+        <div class="form-floating mb-4 position-relative">
+          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-control rounded-pill" placeholder="Password"
+                 [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
+          <label for="password" class="ps-4">{{ 'login.password' | translate }}</label>
+          <span class="position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer" (click)="togglePasswordVisibility()" style="cursor: pointer; z-index: 10;">
+            <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </span>
+          <div class="invalid-feedback ps-4" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            <span *ngIf="loginForm.get('password')?.errors?.['required']">{{ 'login.passwordRequired' | translate }}</span>
+            <span *ngIf="loginForm.get('password')?.errors?.['minlength']">{{ 'login.passwordMin' | translate }}</span>
+          </div>
+        </div>
 
-      <button type="submit" class="btn btn-primary" [disabled]="isLoading">
-        <span *ngIf="!isLoading">{{ 'login.submit' | translate }}</span>
-        <span *ngIf="isLoading">{{ 'loading' | translate }}</span>
-      </button>
-    </form>
+        <div class="error-message alert alert-danger rounded-pill text-center py-2 mb-4" *ngIf="error">
+          <i class="fas fa-exclamation-circle me-2"></i> {{ error }}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm hover-scale" [disabled]="isLoading">
+          <span *ngIf="!isLoading">{{ 'login.submit' | translate }}</span>
+          <span *ngIf="isLoading"><i class="fas fa-spinner fa-spin me-2"></i> {{ 'loading' | translate }}</span>
+        </button>
+
+        <div class="text-center mt-4">
+          <p class="text-muted small mb-0">{{ 'login.noAccount' | translate }} <a routerLink="/register" class="text-primary text-decoration-none fw-bold">{{ 'login.registerHere' | translate }}</a></p>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

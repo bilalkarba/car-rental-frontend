@@ -17,6 +17,8 @@ export class RegisterComponent {
   registerForm: FormGroup;
   isLoading = false;
   error: string | null = null;
+  cinFrontFile: File | null = null;
+  cinBackFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -32,9 +34,26 @@ export class RegisterComponent {
     }, { validator: this.passwordMatchValidator });
   }
 
+  showPassword = false;
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
   passwordMatchValidator(form: FormGroup) {
     return form.controls['password'].value === form.controls['confirmPassword'].value
       ? null : { mismatch: true };
+  }
+
+  onFileSelected(event: any, type: 'front' | 'back') {
+    const file = event.target.files[0];
+    if (file) {
+      if (type === 'front') {
+        this.cinFrontFile = file;
+      } else {
+        this.cinBackFile = file;
+      }
+    }
   }
 
   onSubmit(): void {
@@ -42,28 +61,35 @@ export class RegisterComponent {
       return;
     }
 
+    if (!this.cinFrontFile || !this.cinBackFile) {
+      this.error = 'Please upload both front and back images of your National ID.';
+      return;
+    }
+
     this.isLoading = true;
     this.error = null;
 
-    const { name, email, password, nationalId } = this.registerForm.value;
+    const formData = new FormData();
+    formData.append('name', this.registerForm.get('name')?.value);
+    formData.append('email', this.registerForm.get('email')?.value);
+    formData.append('password', this.registerForm.get('password')?.value);
+    formData.append('nationalId', this.registerForm.get('nationalId')?.value);
+    formData.append('cinFront', this.cinFrontFile);
+    formData.append('cinBack', this.cinBackFile);
     
-    console.log('Attempting registration with:', { name, email, password, nationalId });
-    console.log('Form valid:', this.registerForm.valid);
+    console.log('Attempting registration with FormData');
 
-    this.auth.register({ name, email, password, nationalId }).subscribe({
+    this.auth.register(formData).subscribe({
       next: (response) => {
         console.log('Registration successful:', response);
         this.router.navigate(['/login']);
       },
       error: (error) => {
         console.error('Registration error:', error);
-        console.error('Error status:', error.status);
-        console.error('Error message:', error.message);
         if (error.error) {
-          console.error('Error details:', error.error);
-          this.error = error.error.message || error.error.msg || error.error.error || 'فشل التسجيل. يرجى التحقق من بياناتك والمحاولة مرة أخرى';
+          this.error = error.error.message || error.error.msg || error.error.error || 'Registration failed.';
         } else {
-          this.error = 'حدث خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقًا.';
+          this.error = 'Server error. Please try again later.';
         }
         this.isLoading = false;
       },

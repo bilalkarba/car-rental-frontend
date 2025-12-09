@@ -1,67 +1,96 @@
-<div class="register-container">
-  <div class="register-form">
-    <h2>{{ 'register.title' | translate }}</h2>
-
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="name">{{ 'register.name' | translate }}</label>
-        <input id="name" type="text" formControlName="name" class="form-control"
-               [class.is-invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"/>
-        <div class="invalid-feedback" *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
-          <span *ngIf="registerForm.get('name')?.errors?.['required']">{{ 'register.nameRequired' | translate }}</span>
-          <span *ngIf="registerForm.get('name')?.errors?.['minlength']">{{ 'register.nameMin' | translate }}</span>
+<div class="auth-container d-flex align-items-center justify-content-center min-vh-100">
+  <div class="auth-overlay"></div>
+  <div class="card auth-card border-0 shadow-lg animate-up" style="max-width: 500px;">
+    <div class="card-body p-5">
+      <div class="text-center mb-4">
+        <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+          <i class="fas fa-user-plus fa-2x"></i>
         </div>
+        <h2 class="fw-bold text-dark">{{ 'register.title' | translate }}</h2>
+        <p class="text-muted small">{{'Create your account to start booking.' | translate}}</p>
       </div>
 
-      <div class="form-group">
-        <label for="email">{{ 'register.email' | translate }}</label>
-        <input id="email" type="email" formControlName="email" class="form-control"
-               [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"/>
-        <div class="invalid-feedback" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
-          <span *ngIf="registerForm.get('email')?.errors?.['required']">{{ 'register.emailRequired' | translate }}</span>
-          <span *ngIf="registerForm.get('email')?.errors?.['email']">{{ 'register.emailInvalid' | translate }}</span>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="form-floating mb-3">
+          <input id="name" type="text" formControlName="name" class="form-control rounded-pill" placeholder="Full Name"
+                 [class.is-invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"/>
+          <label for="name" class="ps-4">{{ 'register.name' | translate }}</label>
+          <div class="invalid-feedback ps-4" *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+            <span *ngIf="registerForm.get('name')?.errors?.['required']">{{ 'register.nameRequired' | translate }}</span>
+            <span *ngIf="registerForm.get('name')?.errors?.['minlength']">{{ 'register.nameMin' | translate }}</span>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label for="nationalId">{{ 'register.nationalId' | translate }}</label>
-        <input id="nationalId" type="text" formControlName="nationalId" class="form-control"
-               [class.is-invalid]="registerForm.get('nationalId')?.invalid && registerForm.get('nationalId')?.touched"/>
-        <div class="invalid-feedback" *ngIf="registerForm.get('nationalId')?.invalid && registerForm.get('nationalId')?.touched">
-          <span *ngIf="registerForm.get('nationalId')?.errors?.['required']">{{ 'register.nationalIdRequired' | translate }}</span>
+        <div class="form-floating mb-3">
+          <input id="email" type="email" formControlName="email" class="form-control rounded-pill" placeholder="name@example.com"
+                 [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"/>
+          <label for="email" class="ps-4">{{ 'register.email' | translate }}</label>
+          <div class="invalid-feedback ps-4" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+            <span *ngIf="registerForm.get('email')?.errors?.['required']">{{ 'register.emailRequired' | translate }}</span>
+            <span *ngIf="registerForm.get('email')?.errors?.['email']">{{ 'register.emailInvalid' | translate }}</span>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label for="password">{{ 'register.password' | translate }}</label>
-        <input id="password" type="password" formControlName="password" class="form-control"
-               [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"/>
-        <div class="invalid-feedback" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-          <span *ngIf="registerForm.get('password')?.errors?.['required']">{{ 'register.passwordRequired' | translate }}</span>
-          <span *ngIf="registerForm.get('password')?.errors?.['minlength']">{{ 'register.passwordMin' | translate }}</span>
+        <div class="form-floating mb-3">
+          <input id="nationalId" type="text" formControlName="nationalId" class="form-control rounded-pill" placeholder="National ID"
+                 [class.is-invalid]="registerForm.get('nationalId')?.invalid && registerForm.get('nationalId')?.touched"/>
+          <label for="nationalId" class="ps-4">{{ 'register.nationalId' | translate }}</label>
+          <div class="invalid-feedback ps-4" *ngIf="registerForm.get('nationalId')?.invalid && registerForm.get('nationalId')?.touched">
+            <span *ngIf="registerForm.get('nationalId')?.errors?.['required']">{{ 'register.nationalIdRequired' | translate }}</span>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label for="confirmPassword">{{ 'register.confirmPassword' | translate }}</label>
-        <input id="confirmPassword" type="password" formControlName="confirmPassword" class="form-control"
-               [class.is-invalid]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched || registerForm.errors?.['mismatch']"/>
-        <div class="invalid-feedback" *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
-          <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">{{ 'register.confirmPasswordRequired' | translate }}</span>
+        <div class="mb-3">
+          <label class="form-label ps-4 text-muted small">National ID (Front)</label>
+          <input type="file" class="form-control rounded-pill" (change)="onFileSelected($event, 'front')" accept="image/*">
         </div>
-        <div class="invalid-feedback" *ngIf="registerForm.errors?.['mismatch']">
-          {{ 'register.passwordMismatch' | translate }}
+
+        <div class="mb-3">
+          <label class="form-label ps-4 text-muted small">National ID (Back)</label>
+          <input type="file" class="form-control rounded-pill" (change)="onFileSelected($event, 'back')" accept="image/*">
         </div>
-      </div>
 
-      <div class="error-message" *ngIf="error">
-        {{ error }}
-      </div>
+        <div class="form-floating mb-3 position-relative">
+          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-control rounded-pill" placeholder="Password"
+                 [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"/>
+          <label for="password" class="ps-4">{{ 'register.password' | translate }}</label>
+          <span class="position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer" (click)="togglePasswordVisibility()" style="cursor: pointer; z-index: 10;">
+            <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </span>
+          <div class="invalid-feedback ps-4" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+            <span *ngIf="registerForm.get('password')?.errors?.['required']">{{ 'register.passwordRequired' | translate }}</span>
+            <span *ngIf="registerForm.get('password')?.errors?.['minlength']">{{ 'register.passwordMin' | translate }}</span>
+          </div>
+        </div>
 
-      <button type="submit" class="btn btn-primary" [disabled]="isLoading">
-        <span *ngIf="!isLoading">{{ 'register.submit' | translate }}</span>
-        <span *ngIf="isLoading">{{ 'loading' | translate }}</span>
-      </button>
-    </form>
+        <div class="form-floating mb-4 position-relative">
+          <input id="confirmPassword" [type]="showPassword ? 'text' : 'password'" formControlName="confirmPassword" class="form-control rounded-pill" placeholder="Confirm Password"
+                 [class.is-invalid]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched || registerForm.errors?.['mismatch']"/>
+          <label for="confirmPassword" class="ps-4">{{ 'register.confirmPassword' | translate }}</label>
+           <span class="position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer" (click)="togglePasswordVisibility()" style="cursor: pointer; z-index: 10;">
+            <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </span>
+          <div class="invalid-feedback ps-4" *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+            <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">{{ 'register.confirmPasswordRequired' | translate }}</span>
+          </div>
+          <div class="invalid-feedback ps-4" *ngIf="registerForm.errors?.['mismatch']">
+            {{ 'register.passwordMismatch' | translate }}
+          </div>
+        </div>
+
+        <div class="error-message alert alert-danger rounded-pill text-center py-2 mb-4" *ngIf="error">
+          <i class="fas fa-exclamation-circle me-2"></i> {{ error }}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm hover-scale" [disabled]="isLoading">
+          <span *ngIf="!isLoading">{{ 'register.submit' | translate }}</span>
+          <span *ngIf="isLoading"><i class="fas fa-spinner fa-spin me-2"></i> {{ 'loading' | translate }}</span>
+        </button>
+
+        <div class="text-center mt-4">
+          <p class="text-muted small mb-0">{{ 'register.hasAccount' | translate }} <a routerLink="/login" class="text-primary text-decoration-none fw-bold">{{ 'register.loginHere' | translate }}</a></p>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

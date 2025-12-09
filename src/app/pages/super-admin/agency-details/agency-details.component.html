@@ -1,0 +1,176 @@
+<div class="container mt-5" *ngIf="agency">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ agency.name }}</h2>
+    <button class="btn btn-secondary" routerLink="/super-admin-dashboard">Back to Dashboard</button>
+  </div>
+
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'info'" (click)="activeTab = 'info'" style="cursor: pointer;">Info</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'admins'" (click)="activeTab = 'admins'" style="cursor: pointer;">Admins</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'cars'" (click)="activeTab = 'cars'" style="cursor: pointer;">Cars</a>
+    </li>
+  </ul>
+
+  <div [ngSwitch]="activeTab">
+    <!-- Info Tab -->
+    <div *ngSwitchCase="'info'" class="card shadow-sm p-4">
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Address:</strong> {{ agency.address }}</p>
+          <p><strong>Email:</strong> {{ agency.contactEmail }}</p>
+          <p><strong>Phone:</strong> {{ agency.contactPhone }}</p>
+          <p><strong>Created At:</strong> {{ agency.createdAt | date }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admins Tab -->
+    <div *ngSwitchCase="'admins'" class="card shadow-sm p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Admins</h4>
+        <button class="btn btn-primary" (click)="showAddAdminForm = !showAddAdminForm">
+          {{ showAddAdminForm ? 'Cancel' : 'Add Admin' }}
+        </button>
+      </div>
+
+      <div *ngIf="showAddAdminForm" class="card mb-4 p-3 bg-light">
+        <h5>New Admin</h5>
+        <form (ngSubmit)="createAdmin()">
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label>Name</label>
+              <input type="text" class="form-control" [(ngModel)]="newAdmin.name" name="adminName" required>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label>Email</label>
+              <input type="email" class="form-control" [(ngModel)]="newAdmin.email" name="adminEmail" required>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label>Password</label>
+              <input type="password" class="form-control" [(ngModel)]="newAdmin.password" name="adminPassword" required>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label>National ID</label>
+              <input type="text" class="form-control" [(ngModel)]="newAdmin.nationalId" name="adminNationalId" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success mt-2">Create Admin</button>
+        </form>
+      </div>
+
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>National ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let admin of admins">
+            <td>{{ admin.name }}</td>
+            <td>{{ admin.email }}</td>
+            <td>{{ admin.nationalId }}</td>
+          </tr>
+          <tr *ngIf="admins.length === 0">
+            <td colspan="3" class="text-center">No admins found for this agency.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Cars Tab -->
+    <div *ngSwitchCase="'cars'" class="card shadow-sm p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Cars</h4>
+        <button class="btn btn-primary" (click)="showAddCarForm = !showAddCarForm">
+          {{ showAddCarForm ? 'Cancel' : 'Add Car' }}
+        </button>
+      </div>
+
+      <div *ngIf="showAddCarForm" class="card mb-4 p-3 bg-light">
+        <h5>New Car</h5>
+        <form (ngSubmit)="createCar()">
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <label>Brand</label>
+              <input type="text" class="form-control" [(ngModel)]="newCar.brand" name="carBrand" required>
+            </div>
+            <div class="col-md-4 mb-2">
+              <label>Model</label>
+              <input type="text" class="form-control" [(ngModel)]="newCar.model" name="carModel" required>
+            </div>
+            <div class="col-md-4 mb-2">
+              <label>Plate Number</label>
+              <input type="text" class="form-control" [(ngModel)]="newCar.plateNumber" name="carPlate" required>
+            </div>
+            <div class="col-md-4 mb-2">
+              <label>Price Per Day</label>
+              <input type="number" class="form-control" [(ngModel)]="newCar.pricePerDay" name="carPrice" required>
+            </div>
+            <div class="col-md-4 mb-2">
+              <label>Fuel</label>
+              <select class="form-control" [(ngModel)]="newCar.fuel" name="carFuel" required>
+                <option value="Essence">Essence</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Hybride">Hybride</option>
+                <option value="Electrique">Electrique</option>
+              </select>
+            </div>
+            <div class="col-md-4 mb-2">
+              <label>Type</label>
+              <select class="form-control" [(ngModel)]="newCar.type" name="carType" required>
+                <option value="Sedan">Sedan</option>
+                <option value="SUV">SUV</option>
+                <option value="Luxury">Luxury</option>
+                <option value="Sport">Sport</option>
+              </select>
+            </div>
+            <div class="col-md-12 mb-2">
+              <label>Image</label>
+              <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success mt-2">Create Car</button>
+        </form>
+      </div>
+
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Brand</th>
+            <th>Model</th>
+            <th>Plate Number</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let car of cars">
+            <td>{{ car.brand }}</td>
+            <td>{{ car.model }}</td>
+            <td>{{ car.plateNumber }}</td>
+            <td>
+              <span class="badge" [class.bg-success]="car.available" [class.bg-danger]="!car.available">
+                {{ car.available ? 'Available' : 'Rented' }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="cars.length === 0">
+            <td colspan="4" class="text-center">No cars found for this agency.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center mt-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>

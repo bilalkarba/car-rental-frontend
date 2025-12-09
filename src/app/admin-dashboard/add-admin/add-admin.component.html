@@ -1,111 +1,112 @@
-<div class="add-admin-container">
-  <div class="form-container">
-    <h2>{{ 'addAdminTitle' | translate }}</h2>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-lg rounded-lg overflow-hidden" data-aos="fade-up">
+        <div class="card-header bg-primary text-white p-4 position-relative overflow-hidden">
+          <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-10"></div>
+          <div class="d-flex justify-content-between align-items-center position-relative z-1">
+            <h2 class="mb-0 fw-bold text-white"><i class="fas fa-user-shield me-2"></i>{{ 'addAdminTitle' | translate }}</h2>
+            <button class="btn btn-light btn-sm rounded-pill fw-bold text-primary shadow-sm hover-scale" (click)="cancel()">
+              <i class="fas fa-times me-1"></i> {{ 'cancel' | translate }}
+            </button>
+          </div>
+        </div>
 
-    <div *ngIf="errorMessage" class="alert alert-danger">
-      {{ errorMessage }}
+        <div class="card-body p-5 bg-light">
+          <div *ngIf="errorMessage" class="alert alert-danger rounded-pill d-flex align-items-center mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i> {{ errorMessage }}
+          </div>
+
+          <form [formGroup]="addAdminForm" (ngSubmit)="onSubmit()" novalidate>
+            
+            <div class="form-floating mb-4">
+              <input type="text" id="username" formControlName="username" class="form-control rounded-pill" placeholder="Username"
+                     [ngClass]="{ 'is-invalid': addAdminForm.get('username')?.errors && addAdminForm.get('username')?.touched }">
+              <label for="username">{{ 'username' | translate }}</label>
+              <div class="invalid-feedback ps-3">
+                <span *ngIf="addAdminForm.get('username')?.errors?.['required']">{{ 'usernameRequired' | translate }}</span>
+                <span *ngIf="addAdminForm.get('username')?.errors?.['minlength']">{{ 'usernameMinLength' | translate }}</span>
+              </div>
+            </div>
+
+            <div class="form-floating mb-4">
+              <input type="email" id="email" formControlName="email" class="form-control rounded-pill" placeholder="Email"
+                     [ngClass]="{ 'is-invalid': addAdminForm.get('email')?.errors && addAdminForm.get('email')?.touched }">
+              <label for="email">{{ 'email' | translate }}</label>
+              <div class="invalid-feedback ps-3">
+                <span *ngIf="addAdminForm.get('email')?.errors?.['required']">{{ 'emailRequired' | translate }}</span>
+                <span *ngIf="addAdminForm.get('email')?.errors?.['email']">{{ 'emailInvalid' | translate }}</span>
+              </div>
+            </div>
+
+            <div class="form-floating mb-4">
+              <input type="text" id="fullName" formControlName="fullName" class="form-control rounded-pill" placeholder="Full Name"
+                     [ngClass]="{ 'is-invalid': addAdminForm.get('fullName')?.errors && addAdminForm.get('fullName')?.touched }">
+              <label for="fullName">{{ 'fullName' | translate }}</label>
+              <div class="invalid-feedback ps-3">
+                {{ 'fullNameRequired' | translate }}
+              </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="password" id="password" formControlName="password" class="form-control rounded-pill" placeholder="Password"
+                         [ngClass]="{ 'is-invalid': addAdminForm.get('password')?.errors && addAdminForm.get('password')?.touched }">
+                  <label for="password">{{ 'password' | translate }}</label>
+                  <div class="invalid-feedback ps-3">
+                    <span *ngIf="addAdminForm.get('password')?.errors?.['required']">{{ 'passwordRequired' | translate }}</span>
+                    <span *ngIf="addAdminForm.get('password')?.errors?.['minlength']">{{ 'passwordMinLength' | translate }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control rounded-pill" placeholder="Confirm Password"
+                         [ngClass]="{ 'is-invalid': addAdminForm.get('confirmPassword')?.errors && addAdminForm.get('confirmPassword')?.touched }">
+                  <label for="confirmPassword">{{ 'confirmPassword' | translate }}</label>
+                  <div class="invalid-feedback ps-3">
+                    <span *ngIf="addAdminForm.get('confirmPassword')?.errors?.['required']">{{ 'confirmPasswordRequired' | translate }}</span>
+                    <span *ngIf="addAdminForm.errors?.['passwordMismatch']">{{ 'passwordMismatch' | translate }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- National ID Images -->
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <label for="cinFront" class="form-label ms-3">{{ 'National ID Front' | translate }}</label>
+                <input type="file" id="cinFront" (change)="onFileSelect($event, 'cinFront')" class="form-control rounded-pill" accept="image/*">
+              </div>
+              <div class="col-md-6">
+                <label for="cinBack" class="form-label ms-3">{{ 'National ID Back' | translate }}</label>
+                <input type="file" id="cinBack" (change)="onFileSelect($event, 'cinBack')" class="form-control rounded-pill" accept="image/*">
+              </div>
+            </div>
+
+            <div class="form-floating mb-5">
+              <select id="role" formControlName="role" class="form-select rounded-pill"
+                      [ngClass]="{ 'is-invalid': addAdminForm.get('role')?.errors && addAdminForm.get('role')?.touched }">
+                <option value="admin">{{ 'adminRole' | translate }}</option>
+              </select>
+              <label for="role">{{ 'role' | translate }}</label>
+              <div class="invalid-feedback ps-3">
+                {{ 'roleRequired' | translate }}
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-md hover-lift" [disabled]="addAdminForm.invalid || isLoading">
+                <span *ngIf="!isLoading"><i class="fas fa-user-plus me-2"></i>{{ 'addAdminBtn' | translate }}</span>
+                <span *ngIf="isLoading"><i class="fas fa-spinner fa-spin me-2"></i>{{ 'addingAdmin' | translate }}</span>
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
     </div>
-
-    <form [formGroup]="addAdminForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="username">{{ 'username' | translate }}</label>
-        <input 
-          type="text" 
-          id="username" 
-          formControlName="username" 
-          class="form-control"
-          [ngClass]="{ 'is-invalid': addAdminForm.get('username')?.errors && addAdminForm.get('username')?.touched }">
-        <div *ngIf="addAdminForm.get('username')?.errors?.['required'] && addAdminForm.get('username')?.touched" class="invalid-feedback">
-          {{ 'usernameRequired' | translate }}
-        </div>
-        <div *ngIf="addAdminForm.get('username')?.errors?.['minlength'] && addAdminForm.get('username')?.touched" class="invalid-feedback">
-          {{ 'usernameMinLength' | translate }}
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="email">{{ 'email' | translate }}</label>
-        <input 
-          type="email" 
-          id="email" 
-          formControlName="email" 
-          class="form-control"
-          [ngClass]="{ 'is-invalid': addAdminForm.get('email')?.errors && addAdminForm.get('email')?.touched }">
-        <div *ngIf="addAdminForm.get('email')?.errors?.['required'] && addAdminForm.get('email')?.touched" class="invalid-feedback">
-          {{ 'emailRequired' | translate }}
-        </div>
-        <div *ngIf="addAdminForm.get('email')?.errors?.['email'] && addAdminForm.get('email')?.touched" class="invalid-feedback">
-          {{ 'emailInvalid' | translate }}
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="fullName">{{ 'fullName' | translate }}</label>
-        <input 
-          type="text" 
-          id="fullName" 
-          formControlName="fullName" 
-          class="form-control"
-          [ngClass]="{ 'is-invalid': addAdminForm.get('fullName')?.errors && addAdminForm.get('fullName')?.touched }">
-        <div *ngIf="addAdminForm.get('fullName')?.errors?.['required'] && addAdminForm.get('fullName')?.touched" class="invalid-feedback">
-          {{ 'fullNameRequired' | translate }}
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="password">{{ 'password' | translate }}</label>
-        <input 
-          type="password" 
-          id="password" 
-          formControlName="password" 
-          class="form-control"
-          [ngClass]="{ 'is-invalid': addAdminForm.get('password')?.errors && addAdminForm.get('password')?.touched }">
-        <div *ngIf="addAdminForm.get('password')?.errors?.['required'] && addAdminForm.get('password')?.touched" class="invalid-feedback">
-          {{ 'passwordRequired' | translate }}
-        </div>
-        <div *ngIf="addAdminForm.get('password')?.errors?.['minlength'] && addAdminForm.get('password')?.touched" class="invalid-feedback">
-          {{ 'passwordMinLength' | translate }}
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="confirmPassword">{{ 'confirmPassword' | translate }}</label>
-        <input 
-          type="password" 
-          id="confirmPassword" 
-          formControlName="confirmPassword" 
-          class="form-control"
-          [ngClass]="{ 'is-invalid': addAdminForm.get('confirmPassword')?.errors && addAdminForm.get('confirmPassword')?.touched }">
-        <div *ngIf="addAdminForm.get('confirmPassword')?.errors?.['required'] && addAdminForm.get('confirmPassword')?.touched" class="invalid-feedback">
-          {{ 'confirmPasswordRequired' | translate }}
-        </div>
-        <div *ngIf="addAdminForm.errors?.['passwordMismatch'] && addAdminForm.get('confirmPassword')?.touched" class="invalid-feedback">
-          {{ 'passwordMismatch' | translate }}
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="role">{{ 'role' | translate }}</label>
-        <select 
-          id="role" 
-          formControlName="role" 
-          class="form-control"
-          [ngClass]="{ 'is-invalid': addAdminForm.get('role')?.errors && addAdminForm.get('role')?.touched }">
-          <option value="admin">{{ 'adminRole' | translate }}</option>
-        </select>
-        <div *ngIf="addAdminForm.get('role')?.errors?.['required'] && addAdminForm.get('role')?.touched" class="invalid-feedback">
-          {{ 'roleRequired' | translate }}
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="addAdminForm.invalid || isLoading">
-          <span *ngIf="!isLoading">{{ 'addAdminBtn' | translate }}</span>
-          <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          <span *ngIf="isLoading">{{ 'addingAdmin' | translate }}</span>
-        </button>
-        <button type="button" class="btn btn-secondary" (click)="cancel()">{{ 'cancel' | translate }}</button>
-      </div>
-    </form>
   </div>
 </div>

@@ -1,73 +1,188 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg sticky-top" data-aos="fade-down">
   <div class="container">
-    <a routerLink="/" class="navbar-brand">
-      <i class="fas fa-car me-2"></i>
-     DriveNow
+    <a routerLink="/" class="navbar-brand d-flex align-items-center gap-2">
+      <i class="fas fa-car-side text-primary"></i>
+      <span class="fw-bold">DriveNow</span>
     </a>
     
-    <!-- Language Selector -->
-    <app-language-selector></app-language-selector>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a routerLink="/" class="nav-link">{{ 'navbar.home' | translate }}</a>
-        </li>
-        <li class="nav-item">
-          <a routerLink="/cars" class="nav-link">{{ 'navbar.cars' | translate }}</a>
-        </li>
-        <li class="nav-item" *ngIf="authService.isLogged() && authService.getUser()?.role === 'admin'">
-          <a routerLink="/admin-dashboard" class="nav-link">{{ 'navbar.adminDashboard' | translate }}</a>
-        </li>
-          <li class="nav-item" *ngIf="authService.isLogged() && authService.getUser()?.role === 'user'">
-          <a routerLink="/dashboard" class="nav-link">{{ 'navbar.dashboard' | translate }}</a>
-        </li>
-
-  <!-- إذا المستخدم غير مسجل الدخول -->
-  <ng-container *ngIf="!authService.isLogged(); else loggedUser">
-    <li class="nav-item">
-      <a routerLink="/login" class="nav-link">{{ 'navbar.login' | translate }}</a>
-    </li>
-    <li class="nav-item">
-      <a routerLink="/register" class="nav-link">{{ 'navbar.register' | translate }}</a>
-    </li>
-  </ng-container>
-
-  <!-- إذا المستخدم مسجل الدخول -->
-  <ng-template #loggedUser>
-    <li class="nav-item dropdown">
-      <a
-        class="nav-link dropdown-toggle"
-        href="#"
-        role="button"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
-      >
-        <i class="fas fa-user"></i> {{ authService.getUser()?.name }}
-      </a>
-
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li>
-          <a routerLink="/dashboard" class="dropdown-item">
-            <i class="fas fa-tachometer-alt"></i> {{ 'navbar.dashboard' | translate }}
+          <a routerLink="/" class="nav-link px-3" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            {{ 'navbar.home' | translate }}
           </a>
         </li>
-        <li>
-          <a href="#" class="dropdown-item" (click)="logout($event)">
-            <i class="fas fa-sign-out-alt"></i> {{ 'navbar.logout' | translate }}
+        <li class="nav-item">
+          <a routerLink="/cars" class="nav-link px-3" routerLinkActive="active">
+            {{ 'navbar.cars' | translate }}
           </a>
         </li>
+        <ng-container *ngIf="authService.isLogged()">
+          <li class="nav-item" *ngIf="authService.getUser()?.role === 'admin'">
+            <a routerLink="/admin-dashboard" class="nav-link px-3" routerLinkActive="active">
+              {{ 'navbar.adminDashboard' | translate }}
+            </a>
+          </li>
+          <li class="nav-item" *ngIf="authService.getUser()?.role === 'user'">
+            <a routerLink="/dashboard" class="nav-link px-3" routerLinkActive="active">
+              {{ 'navbar.dashboard' | translate }}
+            </a>
+          </li>
+          <li class="nav-item" *ngIf="authService.isSuperAdmin()">
+            <a routerLink="/super-admin-dashboard" class="nav-link px-3" routerLinkActive="active">
+              Super Admin Dashboard
+            </a>
+          </li>
+        </ng-container>
       </ul>
-    </li>
-  </ng-template>
 
-</ul>
+      <div class="d-flex align-items-center gap-3">
+        <app-language-selector></app-language-selector>
+
+        <ng-container *ngIf="!authService.isLogged(); else loggedUser">
+          <a routerLink="/login" class="btn btn-outline-primary rounded-pill px-4">
+            {{ 'navbar.login' | translate }}
+          </a>
+          <a routerLink="/register" class="btn btn-primary rounded-pill px-4">
+            {{ 'navbar.register' | translate }}
+          </a>
+        </ng-container>
+
+        <ng-template #loggedUser>
+          <div class="dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-dark text-decoration-none" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="avatar bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                <i class="fas fa-user small"></i>
+              </div>
+              <span class="fw-medium">{{ authService.getUser()?.name }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2" style="min-width: 200px;">
+              <li>
+                <a routerLink="/dashboard" class="dropdown-item rounded-2 py-2">
+                  <i class="fas fa-tachometer-alt me-2 text-muted"></i> {{ 'navbar.dashboard' | translate }}
+                </a>
+              </li>
+              <li><hr class="dropdown-divider my-1"></li>
+              <li>
+                <a href="#" class="dropdown-item rounded-2 py-2 text-danger" (click)="logout($event)">
+                  <i class="fas fa-sign-out-alt me-2"></i> {{ 'navbar.logout' | translate }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </ng-template>
+      </div>
     </div>
   </div>
 </nav>
 
-<div class="container mt-4">
-  <router-outlet></router-outlet>
-</div>
+<main class="flex-grow-1">
+  <div class="container py-4" data-aos="fade-in">
+    <router-outlet></router-outlet>
+  </div>
+</main>
+
+<footer class="bg-dark text-light py-5 mt-auto border-top border-secondary">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Company Info -->
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="fas fa-car-side text-primary fs-3"></i>
+          <span class="fs-4 fw-bold">DriveNow</span>
+        </div>
+        <p class="text-secondary mb-4">
+          {{ 'description' | translate }}
+        </p>
+        <div class="d-flex gap-3">
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-lg-2 col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <h5 class="text-white mb-3 fw-bold">{{ 'navbar.home' | translate }}</h5>
+        <ul class="list-unstyled text-secondary">
+          <li class="mb-2"><a routerLink="/" class="text-decoration-none text-secondary hover-white">{{ 'navbar.home' | translate }}</a></li>
+          <li class="mb-2"><a routerLink="/cars" class="text-decoration-none text-secondary hover-white">{{ 'navbar.cars' | translate }}</a></li>
+          <li class="mb-2"><a routerLink="/login" class="text-decoration-none text-secondary hover-white">{{ 'navbar.login' | translate }}</a></li>
+          <li class="mb-2"><a routerLink="/register" class="text-decoration-none text-secondary hover-white">{{ 'navbar.register' | translate }}</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+        <h5 class="text-white mb-3 fw-bold">Contact</h5>
+        <ul class="list-unstyled text-secondary">
+          <li class="mb-3 d-flex gap-2">
+            <i class="fas fa-map-marker-alt mt-1 text-primary"></i>
+            <span>123 Street Name, City, Country</span>
+          </li>
+          <li class="mb-3 d-flex gap-2">
+            <i class="fas fa-phone mt-1 text-primary"></i>
+            <span>+1 234 567 890</span>
+          </li>
+          <li class="mb-3 d-flex gap-2">
+            <i class="fas fa-envelope mt-1 text-primary"></i>
+            <span>info&#64;drivenow.com</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Developer Info -->
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+        <h5 class="text-white mb-3 fw-bold">Developer</h5>
+        <div class="bg-secondary bg-opacity-10 p-3 rounded-3 border border-secondary border-opacity-25">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+              BK
+            </div>
+            <div>
+              <h6 class="mb-0 text-white">Bilal Karbach</h6>
+              <small class="text-secondary">Full Stack Developer</small>
+            </div>
+          </div>
+          <div class="d-flex gap-2 justify-content-center">
+            <a href="https://www.linkedin.com/in/bilal-karbach/" target="_blank" class="btn btn-primary btn-sm flex-grow-1">
+              <i class="fab fa-linkedin-in me-1"></i> LinkedIn
+            </a>
+            <a href="https://github.com/bilalkarbach" target="_blank" class="btn btn-dark btn-sm flex-grow-1 border border-secondary">
+              <i class="fab fa-github me-1"></i> GitHub
+            </a>
+          </div>
+          <a href="https://www.facebook.com/bilal.karbach.1" target="_blank" class="btn btn-outline-light btn-sm w-100 mt-2 border-secondary text-secondary hover-white">
+            <i class="fab fa-facebook me-1"></i> Facebook
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <hr class="border-secondary my-4 opacity-25">
+
+    <div class="row align-items-center">
+      <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+        <p class="text-secondary mb-0 small">&copy; 2025 DriveNow. All rights reserved.</p>
+      </div>
+      <div class="col-md-6 text-center text-md-end">
+        <p class="text-secondary mb-0 small">
+          Designed & Developed by <span class="text-primary fw-medium">Bilal Karbach</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

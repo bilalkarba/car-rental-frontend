@@ -52,6 +52,20 @@ export class AddAdminComponent implements OnInit {
     return password.value === confirmPassword.value ? null : { 'passwordMismatch': true };
   }
 
+  cinFront: File | null = null;
+  cinBack: File | null = null;
+
+  onFileSelect(event: any, type: 'cinFront' | 'cinBack'): void {
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      if (type === 'cinFront') {
+        this.cinFront = file;
+      } else {
+        this.cinBack = file;
+      }
+    }
+  }
+
   onSubmit(): void {
     if (this.addAdminForm.invalid) {
       return;
@@ -60,15 +74,21 @@ export class AddAdminComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    const adminData = {
-      email: this.addAdminForm.value.email,
-      password: this.addAdminForm.value.password,
-      name: this.addAdminForm.value.fullName,
-      nationalId: 'ADMIN-' + Date.now(), // Generate unique ID for admin
-      role: this.addAdminForm.value.role === 'superadmin' ? 'admin' : this.addAdminForm.value.role
-    };
+    const formData = new FormData();
+    formData.append('email', this.addAdminForm.value.email);
+    formData.append('password', this.addAdminForm.value.password);
+    formData.append('name', this.addAdminForm.value.fullName);
+    formData.append('nationalId', 'ADMIN-' + Date.now());
+    formData.append('role', this.addAdminForm.value.role === 'superadmin' ? 'admin' : this.addAdminForm.value.role);
 
-    this.adminService.addAdmin(adminData).subscribe({
+    if (this.cinFront) {
+      formData.append('cinFront', this.cinFront);
+    }
+    if (this.cinBack) {
+      formData.append('cinBack', this.cinBack);
+    }
+
+    this.adminService.addAdmin(formData).subscribe({
       next: (response) => {
         this.isLoading = false;
         this.router.navigate(['/admin-dashboard']);

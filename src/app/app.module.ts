@@ -1,5 +1,5 @@
 import { NgModule, PLATFORM_ID } from '@angular/core';
-import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { CommonModule, DatePipe } from '@angular/common';
 
@@ -23,6 +23,10 @@ import { PaymentCancelComponent } from './pages/payment-cancel/payment-cancel.co
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { DashboardRealtimeComponent } from './pages/admin/dashboard-realtime/dashboard-realtime.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { SuperAdminDashboardComponent } from './pages/super-admin/dashboard/super-admin-dashboard.component';
+import { AgencyDetailsComponent } from './pages/super-admin/agency-details/agency-details.component';
+import { NgChartsModule } from 'ng2-charts';
 
 
 @NgModule({
@@ -34,7 +38,11 @@ import { DashboardRealtimeComponent } from './pages/admin/dashboard-realtime/das
     PaymentComponent,
     PaymentSuccessComponent,
     PaymentCancelComponent,
-    DashboardRealtimeComponent
+    PaymentSuccessComponent,
+    PaymentCancelComponent,
+    DashboardRealtimeComponent,
+    SuperAdminDashboardComponent,
+    AgencyDetailsComponent
   
     
   ],
@@ -52,13 +60,14 @@ import { DashboardRealtimeComponent } from './pages/admin/dashboard-realtime/das
     LanguageSelectorComponent,
     TranslatePipe,
     LoginComponent,
-    RegisterComponent
-    
+    RegisterComponent,
+    NotFoundComponent,
+      NgChartsModule
 ],
   providers: [
      provideHttpClient(withFetch()),
 
-    provideClientHydration(withEventReplay()), 
+    provideClientHydration(), 
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
         { provide: PLATFORM_ID, useValue: 'browser' },
     DatePipe

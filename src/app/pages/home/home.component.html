@@ -1,63 +1,185 @@
-<div class="hero-section">
-  <div class="hero-content">
-    <h1 class="hero-title">{{ 'home.welcome' | translate }}</h1>
-    <p class="hero-subtitle">{{ 'home.subtitle' | translate }}</p>
-    <button class="cta-button" routerLink="/cars">{{ 'navbar.cars' | translate }}</button>
-  </div>
-</div>
-
-<div class="features-section">
-  <div class="container">
-    <h2 class="section-title">{{ 'home.whyChooseUs' | translate }}</h2>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🚗</div>
-        <h3>{{ 'home.variety' | translate }}</h3>
-        <p>{{ 'home.varietyDescription' | translate }}</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">💰</div>
-        <h3>{{ 'home.competitivePrices' | translate }}</h3>
-        <p>{{ 'home.competitivePricesDescription' | translate }}</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔧</div>
-        <h3>{{ 'home.regularMaintenance' | translate }}</h3>
-        <p>{{ 'home.regularMaintenanceDescription' | translate }}</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🌟</div>
-        <h3>{{ 'home.excellentService' | translate }}</h3>
-        <p>{{ 'home.excellentServiceDescription' | translate }}</p>
+<!-- Hero Section -->
+<section class="hero-section d-flex align-items-center position-relative overflow-hidden">
+  <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+  <div class="container position-relative z-1 text-white">
+    <div class="row">
+      <div class="col-lg-8" data-aos="fade-right" data-aos-duration="1000">
+        <h1 class="display-3 fw-bold mb-4 animate-up text-gradient">{{ 'home.welcome' | translate }}</h1>
+        <p class="lead mb-5 fs-4 opacity-90 animate-up delay-1">{{ 'home.subtitle' | translate }}</p>
+        <div class="d-flex gap-3 animate-up delay-2">
+          <button class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg hover-scale" routerLink="/cars">
+            <i class="fas fa-car me-2"></i> {{ 'navbar.cars' | translate }}
+          </button>
+          <button *ngIf="!authService.isLogged()" class="btn btn-outline-light btn-lg rounded-pill px-5 py-3 fw-bold hover-scale" routerLink="/register">
+            {{ 'navbar.register' | translate }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="testimonials-section">
-  <div class="container">
-    <h2 class="section-title">{{ 'home.testimonialsTitle' | translate }}</h2>
-    <div class="testimonials-grid">
-      <div class="testimonial-card">
-        <p>{{ 'home.testimonial1' | translate }}</p>
-        <div class="testimonial-author">{{ 'home.testimonial1Author' | translate }}</div>
+<!-- Features Section -->
+<section class="py-5 bg-light">
+  <div class="container py-5">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold text-dark mb-3">{{ 'home.whyChooseUs' | translate }}</h2>
+      <div class="divider mx-auto bg-primary rounded"></div>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift text-center p-4">
+          <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+            <i class="fas fa-car fa-2x"></i>
+          </div>
+          <h4 class="fw-bold mb-3">{{ 'home.variety' | translate }}</h4>
+          <p class="text-muted mb-0">{{ 'home.varietyDescription' | translate }}</p>
+        </div>
       </div>
-      <div class="testimonial-card">
-        <p>{{ 'home.testimonial2' | translate }}</p>
-        <div class="testimonial-author">{{ 'home.testimonial2Author' | translate }}</div>
+      
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift text-center p-4">
+          <div class="icon-box bg-success bg-opacity-10 text-success rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+            <i class="fas fa-tags fa-2x"></i>
+          </div>
+          <h4 class="fw-bold mb-3">{{ 'home.competitivePrices' | translate }}</h4>
+          <p class="text-muted mb-0">{{ 'home.competitivePricesDescription' | translate }}</p>
+        </div>
       </div>
-      <div class="testimonial-card">
-        <p>{{ 'home.testimonial3' | translate }}</p>
-        <div class="testimonial-author">{{ 'home.testimonial3Author' | translate }}</div>
+      
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift text-center p-4">
+          <div class="icon-box bg-info bg-opacity-10 text-info rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+            <i class="fas fa-tools fa-2x"></i>
+          </div>
+          <h4 class="fw-bold mb-3">{{ 'home.regularMaintenance' | translate }}</h4>
+          <p class="text-muted mb-0">{{ 'home.regularMaintenanceDescription' | translate }}</p>
+        </div>
+      </div>
+      
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift text-center p-4">
+          <div class="icon-box bg-warning bg-opacity-10 text-warning rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+            <i class="fas fa-headset fa-2x"></i>
+          </div>
+          <h4 class="fw-bold mb-3">{{ 'home.excellentService' | translate }}</h4>
+          <p class="text-muted mb-0">{{ 'home.excellentServiceDescription' | translate }}</p>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="cta-section">
-  <div class="container">
-    <h2>{{ 'home.ctaTitle' | translate }}</h2>
-    <p>{{ 'home.ctaSubtitle' | translate }}</p>
-    <button class="cta-button" routerLink="/cars">{{ 'home.ctaButton' | translate }}</button>
+<!-- Featured Cars Section -->
+<section class="py-5" *ngIf="featuredCars.length > 0">
+  <div class="container py-5">
+    <div class="d-flex justify-content-between align-items-end mb-5">
+      <div>
+        <h2 class="display-5 fw-bold text-dark mb-2">Featured Cars</h2>
+        <div class="divider bg-primary rounded" style="width: 60px;"></div>
+      </div>
+      <a routerLink="/cars" class="btn btn-outline-primary rounded-pill px-4">View All Cars <i class="fas fa-arrow-right ms-2"></i></a>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4" *ngFor="let car of featuredCars">
+        <div class="card h-100 border-0 shadow-sm hover-lift overflow-hidden">
+          <div class="position-relative">
+            <img [src]="car.image" [alt]="car.brand + ' ' + car.model" class="card-img-top" style="height: 250px; object-fit: cover;">
+            <div class="position-absolute top-0 end-0 m-3">
+              <span class="badge bg-primary rounded-pill px-3 py-2 fs-6 shadow-sm">${{ car.pricePerDay }}/day</span>
+            </div>
+          </div>
+          <div class="card-body p-4">
+            <h5 class="card-title fw-bold mb-3">{{ car.brand }} {{ car.model }}</h5>
+            <div class="d-flex justify-content-between mb-4 text-muted small">
+              <span><i class="fas fa-gas-pump me-1"></i> {{ car.fuel || 'Petrol' }}</span>
+              <span><i class="fas fa-cog me-1"></i> {{ car.type || 'Auto' }}</span>
+              <span><i class="fas fa-users me-1"></i> 5 Seats</span>
+            </div>
+            <a [routerLink]="['/cars', car._id]" class="btn btn-primary w-100 rounded-pill py-2">Book Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5 bg-light position-relative">
+  <div class="container py-5">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold text-dark mb-3">{{ 'home.testimonialsTitle' | translate }}</h2>
+      <div class="divider mx-auto bg-primary rounded"></div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 position-relative">
+          <i class="fas fa-quote-left text-primary opacity-25 position-absolute top-0 start-0 m-4 fs-1"></i>
+          <div class="card-body pt-5">
+            <p class="card-text text-muted mb-4 fst-italic">{{ 'home.testimonial1' | translate }}</p>
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 50px; height: 50px;">AM</div>
+              <div>
+                <h6 class="fw-bold mb-0">{{ 'home.testimonial1Author' | translate }}</h6>
+                <small class="text-warning">
+                  <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 position-relative">
+          <i class="fas fa-quote-left text-primary opacity-25 position-absolute top-0 start-0 m-4 fs-1"></i>
+          <div class="card-body pt-5">
+            <p class="card-text text-muted mb-4 fst-italic">{{ 'home.testimonial2' | translate }}</p>
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 50px; height: 50px;">FZ</div>
+              <div>
+                <h6 class="fw-bold mb-0">{{ 'home.testimonial2Author' | translate }}</h6>
+                <small class="text-warning">
+                  <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 position-relative">
+          <i class="fas fa-quote-left text-primary opacity-25 position-absolute top-0 start-0 m-4 fs-1"></i>
+          <div class="card-body pt-5">
+            <p class="card-text text-muted mb-4 fst-italic">"Excellent experience! The car was in perfect condition and the staff was very helpful."</p>
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar bg-info text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 50px; height: 50px;">JD</div>
+              <div>
+                <h6 class="fw-bold mb-0">John Doe</h6>
+                <small class="text-warning">
+                  <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white text-center position-relative overflow-hidden">
+  <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-10"></div>
+  <div class="container position-relative z-1 py-5">
+    <h2 class="display-4 fw-bold mb-4 text-warning">{{ 'home.ctaTitle' | translate }}</h2>
+    <p class="lead mb-5 opacity-90">{{ 'home.ctaSubtitle' | translate }}</p>
+    <button class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold text-primary shadow-lg hover-scale" routerLink="/cars">
+      {{ 'home.ctaButton' | translate }}
+    </button>
+  </div>
+</section>

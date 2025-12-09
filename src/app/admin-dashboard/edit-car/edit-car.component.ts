@@ -17,6 +17,8 @@ export class EditCarComponent implements OnInit {
   carForm: FormGroup;
   isLoading = false;
   carId: string = '';
+  selectedFile: File | null = null;
+  imagePreview: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -51,6 +53,9 @@ export class EditCarComponent implements OnInit {
       next: (car) => {
         if (car) {
           this.carForm.patchValue(car);
+          if (car.image) {
+            this.imagePreview = car.image;
+          }
         }
       },
       error: (error) => {
@@ -58,6 +63,20 @@ export class EditCarComponent implements OnInit {
         this.router.navigate(['/admin-dashboard']);
       }
     });
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   onSubmit() {
@@ -68,7 +87,21 @@ export class EditCarComponent implements OnInit {
     
     if (this.carForm.valid) {
       this.isLoading = true;
-      this.adminService.updateCar(this.carId, this.carForm.value).subscribe({
+
+      const formData = new FormData();
+      
+      // Append all form fields
+      Object.keys(this.carForm.controls).forEach(key => {
+        const value = this.carForm.get(key)?.value;
+        formData.append(key, value);
+      });
+
+      // Append image if selected
+      if (this.selectedFile) {
+        formData.append('image', this.selectedFile);
+      }
+
+      this.adminService.updateCar(this.carId, formData).subscribe({
         next: () => {
           this.router.navigate(['/admin-dashboard']);
         },

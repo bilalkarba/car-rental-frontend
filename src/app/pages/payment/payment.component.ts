@@ -50,8 +50,8 @@ export class PaymentComponent implements OnInit {
       startDate: this.bookingData.startDate,
       endDate: this.bookingData.endDate,
       amount: this.bookingData.totalAmount,
-      return_url: 'http://localhost:52182/payment-success',
-      cancel_url: 'http://localhost:52182/payment-cancel'
+      return_url: `${window.location.origin}/payment-success`,
+      cancel_url: `${window.location.origin}/payment-cancel`
     };
 
     console.log("Sending payment payload:", paymentPayload);

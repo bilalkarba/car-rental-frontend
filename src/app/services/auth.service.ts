@@ -49,6 +49,8 @@ export class AuthService {
               id: response.user.id || response.user._id
             };
             storage.setItem(this.USER_KEY, JSON.stringify(userData));
+            // Store role separately for easier access
+            storage.setItem('user_role', response.user.role);
           }
         }
       })
@@ -74,13 +76,14 @@ export class AuthService {
   }
 
   register(userData: any): Observable<any> {
+    // When sending FormData, do NOT set Content-Type header manually.
+    // The browser will automatically set it with the correct boundary.
     const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
 
     console.log('Sending registration request to:', `${this.API_URL}/auth/register`);
-    console.log('Registration data:', userData);
+    // console.log('Registration data:', userData); // FormData cannot be logged easily
 
     return this.http.post(`${this.API_URL}/auth/register`, userData, { headers });
   }
@@ -96,6 +99,27 @@ export class AuthService {
 
   isAdmin(): boolean {
     const user = this.getUser();
-    return user ? (user.role === 'admin' || user.role === 'superadmin') : false;
+    return user ? (user.role === 'admin' || user.role === 'superadmin' || user.role === 'super admin') : false;
+  }
+
+  isSuperAdmin(): boolean {
+    const user = this.getUser();
+    return user ? (user.role === 'superadmin' || user.role === 'super admin') : false;
+  }
+
+  isTokenValid(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+    try {
+      // Simple check if token has proper format
+      const parts = token.split('.');
+      if (parts.length !== 3) return false;
+      // Try to decode payload
+      const payload = JSON.parse(atob(parts[1]));
+      // Check if token is expired
+      return payload.exp > Date.now() / 1000;
+    } catch (e) {
+      return false;
+    }
   }
 }

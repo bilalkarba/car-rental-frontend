@@ -1,56 +1,213 @@
-<div class="dashboard-container">
-  <div class="dashboard-header">
-    <h2>{{ translationService.translate('dashboard.title') || 'Tableau de bord' }}</h2>
-    <p>{{ translationService.translate('dashboard.subtitle') || 'Mes réservations de voitures' }}</p>
-  </div>
-
-  <div class="loading-spinner" *ngIf="isLoading">
-    <div class="spinner"></div>
-    <p>{{ translationService.translate('loading') || 'Chargement...' }}</p>
-  </div>
-
-  <div class="no-bookings-message" *ngIf="!isLoading && userBookings.length === 0">
-    <i class="fas fa-car"></i>
-    <h3>{{ translationService.translate('dashboard.noBookings') || 'Vous n\'avez pas encore de réservations' }}</h3>
-    <button class="btn btn-primary" (click)="navigateToCars()">
-      <i class="fas fa-search"></i>
-      {{ translationService.translate('dashboard.browseCars') || 'Parcourir les voitures' }}
-    </button>
-  </div>
-
-  <div class="bookings-grid" *ngIf="!isLoading && userBookings.length > 0">
-    <div class="booking-card" *ngFor="let booking of userBookings">
-      <div class="booking-image">
-        <ng-container *ngIf="booking.car">
-          <img [src]="booking.car.image || 'assets/images/default-car.jpg'" [alt]="booking.car.model || 'Car'" />
-          <div class="booking-price" *ngIf="booking.car.pricePerDay">{{ booking.car.pricePerDay }} MAD/{{ translationService.translate('pricePerDay') || 'jour' }}</div>
-        </ng-container>
-        <ng-container *ngIf="!booking.car">
-          <div class="loading-car-info">
-            <div class="spinner"></div>
-            <p>{{ translationService.translate('loading') || 'Chargement...' }}</p>
-          </div>
-        </ng-container>
+<div class="dashboard-container section-padding min-vh-100">
+  <div class="container">
+    <div class="dashboard-header mb-5 animate-up d-flex justify-content-between align-items-center">
+      <div>
+        <h2 class="display-5 fw-bold mb-2">{{ translationService.translate('dashboard.title') || 'My Dashboard' }}</h2>
+        <p class="text-muted lead mb-0">{{ translationService.translate('dashboard.subtitle') || 'Manage your car rentals' }}</p>
       </div>
-      <div class="booking-info">
-        <h3 *ngIf="booking.car">{{ booking.car.brand }} {{ booking.car.model }}</h3>
-        <h3 *ngIf="!booking.car">{{ translationService.translate('booking.carInfo') || 'Informations sur la voiture en cours de chargement...' }}</h3>
-        <div class="booking-details" *ngIf="booking.car">
-          <span><i class="fas fa-calendar"></i> {{ booking.car.year }}</span>
-          <span><i class="fas fa-id-card"></i> {{ booking.car.plateNumber }}</span>
+      <button class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm hover-scale" (click)="loadUserBookings()" [disabled]="isLoading">
+        <i class="fas fa-sync-alt me-2" [class.fa-spin]="isLoading"></i>
+        {{ translationService.translate('refreshData') || 'Refresh Data' }}
+      </button>
+    </div>
+    <div class="divider rounded mb-5"></div>
+
+    <div class="loading-spinner text-center py-5" *ngIf="isLoading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{{ translationService.translate('loading') || 'Loading...' }}</span>
+      </div>
+      <p class="text-muted mt-3">{{ translationService.translate('dashboard.loadingBookings') || 'Loading your bookings...' }}</p>
+    </div>
+
+    <div class="no-bookings-message text-center py-5 animate-up" *ngIf="!isLoading && userBookings.length === 0">
+      <div class="icon-box text-muted rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center shadow-sm">
+        <i class="fas fa-calendar-times"></i>
+      </div>
+      <h3 class="fw-bold mb-3">{{ translationService.translate('dashboard.noBookings') || 'No bookings found' }}</h3>
+      <p class="text-muted mb-4">{{ translationService.translate('dashboard.noBookingsDesc') || "You haven't booked any cars yet. Start exploring our collection!" }}</p>
+      <button class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-sm hover-scale" (click)="navigateToCars()">
+        <i class="fas fa-search me-2"></i>
+        {{ translationService.translate('dashboard.browseCars') || 'Browse Cars' }}
+      </button>
+    </div>
+
+    <div class="bookings-grid row g-4" *ngIf="!isLoading && userBookings.length > 0">
+      <div class="col-md-6 col-lg-4 animate-up" *ngFor="let booking of userBookings; let i = index" [style.animation-delay]="(i * 0.1) + 's'">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="position-relative overflow-hidden">
+            <ng-container *ngIf="booking.car">
+              <img [src]="booking.car.image || 'assets/images/default-car.jpg'" 
+                   [alt]="booking.car.model" 
+                   class="card-img-top" 
+                   style="height: 220px; object-fit: cover;">
+              <div class="position-absolute top-0 end-0 m-3">
+                <span class="badge rounded-pill px-3 py-2 fs-6 shadow-sm" 
+                      [class.bg-success]="booking.status === 'confirmed'"
+                      [class.bg-warning]="booking.status === 'pending'"
+                      [class.bg-danger]="booking.status === 'cancelled'"
+                      [class.bg-secondary]="booking.status === 'returned'">
+                  <i class="fas fa-check-circle me-1" *ngIf="booking.status === 'confirmed'"></i>
+                  <i class="fas fa-clock me-1" *ngIf="booking.status === 'pending'"></i>
+                  <i class="fas fa-times-circle me-1" *ngIf="booking.status === 'cancelled'"></i>
+                  <i class="fas fa-undo me-1" *ngIf="booking.status === 'returned'"></i>
+                  {{ booking.status === 'confirmed' ? (translationService.translate('bookings.confirmed') || 'Confirmed') : 
+                     booking.status === 'pending' ? (translationService.translate('bookings.pending') || 'Pending') : 
+                     booking.status === 'returned' ? (translationService.translate('bookings.returned') || 'Returned') :
+                     (translationService.translate('bookings.cancelled') || 'Cancelled') }}
+                </span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="!booking.car">
+              <div class="d-flex align-items-center justify-content-center bg-light" style="height: 220px;">
+                <div class="spinner-border text-muted"></div>
+              </div>
+            </ng-container>
+          </div>
+          
+          <div class="card-body p-4">
+            <h5 class="card-title fw-bold mb-3" *ngIf="booking.car">
+              <i class="fas fa-car me-2 text-primary"></i>
+              {{ booking.car.brand }} {{ booking.car.model }}
+            </h5>
+            <h5 class="card-title fw-bold mb-3 text-muted" *ngIf="!booking.car">
+              <i class="fas fa-spinner fa-spin me-2"></i>
+              Loading car info...
+            </h5>
+            
+            <div class="booking-details mb-4">
+              <div class="d-flex align-items-start mb-3">
+                <i class="fas fa-calendar-alt me-2 text-primary mt-1"></i>
+                <div class="small">
+                  <div class="fw-semibold text-dark mb-1">{{ translationService.translate('booking.startDate') || 'Start' }}</div>
+                  <div class="text-muted">{{ booking.startDate | date:'MMM d, y, h:mm a' }}</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-start mb-3">
+                <i class="fas fa-calendar-check me-2 text-primary mt-1"></i>
+                <div class="small">
+                  <div class="fw-semibold text-dark mb-1">{{ translationService.translate('booking.endDate') || 'End' }}</div>
+                  <div class="text-muted">{{ booking.endDate | date:'MMM d, y, h:mm a' }}</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center mb-2">
+                <i class="fas fa-clock me-2 text-primary"></i>
+                <span class="small fw-semibold text-dark">{{ calculateBookingDuration(booking) }}</span>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-end border-top pt-3">
+              <div *ngIf="booking.car">
+                <div class="text-muted small mb-1">{{ translationService.translate('booking.totalPrice') || 'Total Price' }}</div>
+                <div class="text-primary fw-bold fs-4">
+                  <i class="fas fa-tag me-1"></i>
+                  {{ calculateTotalPrice(booking) }} MAD
+                </div>
+              </div>
+              <div class="d-flex gap-3 align-items-center">
+                <!-- View Car Button -->
+                <div class="text-center" *ngIf="booking.car">
+                  <button class="btn btn-outline-primary rounded-circle p-0 d-flex align-items-center justify-content-center" 
+                          style="width: 70px; height: 70px;"
+                          [routerLink]="['/cars', booking.car._id]">
+                    <i class="fas fa-car fa-2x"></i>
+                  </button>
+                  <small class="d-block mt-2 text-muted fw-semibold">
+                    {{ translationService.translate('carDetails') || 'Détails voiture' }}
+                  </small>
+                </div>
+                
+                <!-- Download Receipt Button -->
+                <div class="text-center">
+                  <button class="btn btn-success rounded-circle p-0 d-flex align-items-center justify-content-center shadow" 
+                          style="width: 80px; height: 80px;"
+                          (click)="downloadReceipt(booking)">
+                    <i class="fas fa-download fa-2x"></i>
+                  </button>
+                  <small class="d-block mt-2 text-dark fw-bold">
+                    {{ translationService.translate('downloadReceipt') || 'Télécharger' }}
+                  </small>
+                </div>
+                
+                <!-- View Details Button -->
+                <div class="text-center">
+                  <button class="btn btn-primary rounded-circle p-0 d-flex align-items-center justify-content-center" 
+                          style="width: 70px; height: 70px;"
+                          (click)="viewBookingDetails(booking._id)">
+                    <i class="fas fa-info-circle fa-2x"></i>
+                  </button>
+                  <small class="d-block mt-2 text-muted fw-semibold">
+                    {{ translationService.translate('bookingDetails') || 'Détails réservation' }}
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="booking-dates">
-          <div><strong>{{ translationService.translate('startDate') || 'Date de début' }}:</strong> {{ booking.startDate | date:'dd/MM/yyyy HH:mm' }}</div>
-          <div><strong>{{ translationService.translate('endDate') || 'Date de fin' }}:</strong> {{ booking.endDate | date:'dd/MM/yyyy HH:mm' }}</div>
-          <div class="booking-duration"><strong>{{translationService.translate('booking.duration')}} :</strong> {{ calculateBookingDuration(booking) }}</div>
-        </div>
-        <div class="booking-status" [class.confirmed]="booking.status === 'confirmed'" [class.pending]="booking.status === 'pending'" [class.cancelled]="booking.status === 'cancelled'">
-          {{ booking.status === 'confirmed' ? (translationService.translate('bookings.confirmed') || 'Confirmé') : 
-             booking.status === 'pending' ? (translationService.translate('bookings.pending') || 'En attente') : 
-             (translationService.translate('bookings.cancelled') || 'Annulé') }}
-        </div>
-        
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Hidden Receipt Template for PDF Generation -->
+<div id="dashboard-receipt-content" *ngIf="selectedBooking" style="position: absolute; left: -9999px; top: 0; width: 210mm; padding: 20mm; background: white; color: black; font-family: 'Helvetica', sans-serif;">
+  <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
+    <h1 style="margin: 0; font-size: 24px; text-transform: uppercase;">Reçu de Paiement</h1>
+    <p style="margin: 5px 0; font-size: 14px; color: #666;">DriveNow Car Rental</p>
+  </div>
+
+  <div style="margin-bottom: 30px;">
+    <table style="width: 100%; border-collapse: collapse;">
+     
+      <tr>
+        <td style="padding: 10px 0; font-weight: bold;">Nom du Locataire:</td>
+        <td style="padding: 10px 0;">{{ user?.name }}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px 0; font-weight: bold;">Numéro CIN:</td>
+        <td style="padding: 10px 0;">{{ user?.nationalId || 'N/A' }}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px 0; font-weight: bold;">Voiture:</td>
+        <td style="padding: 10px 0;">{{ selectedBooking.car?.brand }} {{ selectedBooking.car?.model }}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px 0; font-weight: bold;">Immatriculation:</td>
+        <td style="padding: 10px 0;">{{ selectedBooking.car?.plateNumber || 'N/A' }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="margin-bottom: 30px;">
+    <h3 style="border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 15px;">Détails de la Location</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="padding: 8px 0; color: #555;">Date de Début:</td>
+        <td style="padding: 8px 0; text-align: right;">{{ selectedBooking.startDate | date:'dd/MM/yyyy' }}</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px 0; color: #555;">Date de Fin:</td>
+        <td style="padding: 8px 0; text-align: right;">{{ selectedBooking.endDate | date:'dd/MM/yyyy' }}</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px 0; color: #555;">Durée:</td>
+        <td style="padding: 8px 0; text-align: right;">
+          {{ calculateDurationInDays(selectedBooking) }} Jours
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="margin-top: 40px; border-top: 2px solid #333; padding-top: 20px;">
+    <table style="width: 100%;">
+      <tr>
+        <td style="font-size: 18px; font-weight: bold;">Montant Total Payé:</td>
+        <td style="font-size: 18px; font-weight: bold; text-align: right; color: #2c3e50;">{{ calculateTotalPrice(selectedBooking) }} MAD</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="margin-top: 60px; text-align: center; font-size: 12px; color: #999;">
+    <p>Merci d'avoir choisi DriveNow pour votre location.</p>
+    <p>Ce reçu est généré électroniquement.</p>
   </div>
 </div>

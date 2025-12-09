@@ -1,57 +1,128 @@
-<div class="cars-container">
-  <div class="header">
-    <h1>{{ 'cars.title' | translate }}</h1>
-    <p>{{ 'description' | translate }}</p>
+<!-- Header Section -->
+<div class="page-header d-flex align-items-center justify-content-center position-relative overflow-hidden">
+  <div class="header-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+  <div class="container position-relative z-1 text-center text-white">
+    <h1 class="display-4 fw-bold mb-3 animate-up text-warning">{{ 'cars.title' | translate }}</h1>
+    <p class="lead opacity-75 animate-up delay-1">{{ 'description' | translate }}</p>
   </div>
-
-<!-- Formulaire de recherche -->
-<div class="search-container mb-4 p-3 bg-light rounded">
-  <h4 class="mb-3">{{ 'title' | translate }}</h4>
-  <form [formGroup]="searchForm" class="row g-3">
-    <div class="col-md-4">
-      <label for="carName" class="form-label">{{ 'carName' | translate }}</label>
-      <input type="text" class="form-control" id="carName" formControlName="carName" placeholder="{{ 'carNamePlaceholder' | translate }}">
-    </div>
-    <div class="col-md-3">
-      <label for="minPrice" class="form-label">{{ 'minPrice' | translate }}</label>
-      <input type="number" class="form-control" id="minPrice" formControlName="minPrice" min="0" placeholder="0">
-    </div>
-    <div class="col-md-3">
-      <label for="maxPrice" class="form-label">{{ 'maxPrice' | translate }}</label>
-      <input type="number" class="form-control" id="maxPrice" formControlName="maxPrice" min="0" placeholder="1000000">
-    </div>
-    <div class="col-md-2 d-flex align-items-end">
-      <div class="btn-group w-100" role="group">
-        <button type="button" class="btn btn-primary" (click)="searchCars()">{{ 'searchBtn' | translate }}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="resetSearch()">{{ 'resetBtn' | translate }}</button>
-      </div>
-    </div>
-  </form>
 </div>
 
+<div class="container py-5">
+  <!-- Search Section -->
+  <div class="search-card card border-0 shadow-sm mb-5 animate-up delay-2">
+    <div class="card-body p-4">
+      <h5 class="card-title fw-bold mb-4 text-primary"><i class="fas fa-search me-2"></i>{{ 'title' | translate }}</h5>
+      <form [formGroup]="searchForm" class="row g-3">
+        <div class="col-md-4">
+          <div class="form-floating">
+            <input type="text" class="form-control rounded-pill" id="carName" formControlName="carName" placeholder="{{ 'carNamePlaceholder' | translate }}">
+            <label for="carName">{{ 'carName' | translate }}</label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-floating">
+            <input type="number" class="form-control rounded-pill" id="minPrice" formControlName="minPrice" min="0" placeholder="0">
+            <label for="minPrice">{{ 'minPrice' | translate }}</label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-floating">
+            <input type="number" class="form-control rounded-pill" id="maxPrice" formControlName="maxPrice" min="0" placeholder="1000000">
+            <label for="maxPrice">{{ 'maxPrice' | translate }}</label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-floating">
+            <select class="form-select rounded-pill" id="agencyAddress" formControlName="agencyAddress">
+              <option value="">All Addresses</option>
+              <option *ngFor="let address of agencyAddresses" [value]="address">{{ address }}</option>
+            </select>
+            <label for="agencyAddress">Agency Address</label>
+          </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-center">
+          <div class="d-grid gap-2 w-100">
+            <button type="button" class="btn btn-outline-primary rounded-pill fw-bold" (click)="resetSearch()">
+              <i class="fas fa-undo me-1"></i> {{ 'resetBtn' | translate }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 
-  <div class="cars-grid">
-    <div class="car-card" *ngFor="let car of filteredCars">
-      <div class="car-image-container">
-        <img [src]="car.image" [alt]="car.model" class="car-image">
-        <div class="car-overlay">
-          <div class="price-badge">{{ car.pricePerDay }} <span>{{ 'pricePerDay' | translate }}</span></div>
+  <!-- Cars Grid -->
+  <div class="row g-4" *ngIf="filteredCars.length > 0; else noCars">
+    <div class="col-md-6 col-lg-4 animate-up" *ngFor="let car of paginatedCars; let i = index" [style.animation-delay]="(i * 0.1) + 's'">
+      <div class="card h-100 border-0 shadow-sm hover-lift overflow-hidden">
+        <div class="position-relative">
+          <img [src]="car.image" [alt]="car.model" class="card-img-top" style="height: 250px; object-fit: cover;">
+          <div class="position-absolute top-0 end-0 m-3">
+            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6 shadow-sm">${{ car.pricePerDay }}/day</span>
+          </div>
+          <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-gradient-dark text-white d-flex justify-content-between align-items-center" *ngIf="!car.available">
+             <span class="badge bg-danger rounded-pill">Unavailable</span>
+          </div>
         </div>
-      </div>
-      <div class="car-info">
-        <h3>{{ car.brand }} {{ car.model }}</h3>
-        <div class="car-details">
-          <span class="year"><i class="fas fa-calendar"></i> {{ car.year }}</span>
-          <span class="plate"><i class="fas fa-id-card"></i> {{ car.plateNumber }}</span>
+        <div class="card-body p-4">
+          <h5 class="card-title fw-bold mb-3">{{ car.brand }} {{ car.model }}</h5>
+          
+          <div class="d-flex justify-content-between mb-4 text-muted small">
+            <span><i class="fas fa-calendar me-1 text-primary"></i> {{ car.year }}</span>
+            <span><i class="fas fa-gas-pump me-1 text-primary"></i> {{ car.fuel || 'Petrol' }}</span>
+            <span><i class="fas fa-cog me-1 text-primary"></i> {{ car.type || 'Auto' }}</span>
+          </div>
+          <div class="mb-3 text-muted small" *ngIf="car.agencyId?.address">
+            <i class="fas fa-map-marker-alt me-1 text-danger"></i> {{ car.agencyId.address }}
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center border-top pt-3">
+             <span class="text-muted small"><i class="fas fa-id-card me-1"></i> {{ car.plateNumber }}</span>
+             <button class="btn btn-outline-primary rounded-pill btn-sm px-4 fw-bold" [routerLink]="['/cars', car._id]">
+              {{ 'detailsBtn' | translate }} <i class="fas fa-arrow-right ms-1"></i>
+            </button>
+          </div>
         </div>
-        <button class="view-details-btn" [routerLink]="['/cars', car._id]">
-          <span>{{ 'detailsBtn' | translate }}</span>
-          <i class="fas fa-arrow-left"></i>
-        </button>
       </div>
     </div>
   </div>
 
-  <div class="loading" *ngIf="!cars.length">
-    <div class="spinner"></div>
-    <p>{{ 'loading' | translate }}</p>
+  <!-- Pagination Controls -->
+  <div class="d-flex justify-content-center mt-5" *ngIf="totalPages > 1">
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="changePage(currentPage - 1)" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </button>
+        </li>
+        
+        <li class="page-item" *ngFor="let page of pages" [class.active]="currentPage === page">
+          <button class="page-link" (click)="changePage(page)">{{ page }}</button>
+        </li>
+        
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="changePage(currentPage + 1)" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <ng-template #noCars>
+    <div class="text-center py-5 animate-up">
+      <div class="icon-box bg-light text-muted rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+        <i class="fas fa-car-crash fa-2x"></i>
+      </div>
+      <h3 class="text-muted">No cars found</h3>
+      <p class="text-muted opacity-75">Try adjusting your search criteria.</p>
+    </div>
+  </ng-template>
+
+  <div class="loading-overlay d-flex align-items-center justify-content-center" *ngIf="!cars.length && !filteredCars.length">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">{{ 'loading' | translate }}</span>
+    </div>
+  </div>
+</div>

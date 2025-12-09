@@ -1,6 +1,7 @@
 <div class="language-selector dropdown">
-  <button class="btn btn-outline-light dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-    {{ getCurrentLanguageName() }}
+  <button class="btn btn-outline-secondary dropdown-toggle rounded-pill px-3 d-flex align-items-center gap-2" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fs-5">{{ getCurrentLanguageName().split(' ')[0] }}</span>
+    <span class="d-none d-md-inline">{{ getCurrentLanguageName().split(' ').slice(1).join(' ') }}</span>
   </button>
   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
     <li *ngFor="let lang of languages">

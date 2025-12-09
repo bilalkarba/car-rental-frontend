@@ -4,7 +4,7 @@ import { DatePipe } from '@angular/common';
 import { PaypalService } from '../../services/paypal.service';
 
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-payment-success',
@@ -61,55 +61,37 @@ export class PaymentSuccessComponent implements OnInit {
   downloadReceipt(): void {
     if (!this.booking) return;
 
-    const doc = new jsPDF({
-      orientation: 'p',
-      unit: 'mm',
-      format: 'a4'
+    const data = document.getElementById('receipt-content');
+    if (!data) {
+      console.error('Receipt element not found');
+      return;
+    }
+
+    // Temporarily make it visible for capture if needed, but absolute positioning usually works
+    // We might need to ensure it's rendered
+    
+    html2canvas(data, { scale: 2 }).then(canvas => {
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      
+      const contentDataURL = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const position = 0;
+      
+      pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
+      pdf.save('Recu_Paiement_DriveNow.pdf');
     });
+  }
 
-    // استخدام الخط الافتراضي للغة الفرنسية
-    doc.setFont('helvetica');
-
-    doc.setFontSize(20);
-    doc.text('Reçu de paiement', 105, 20, { align: 'center' });
-
-    const bookingId = this.booking._id || 'Non défini';
-    const carBrand = this.booking.carId?.brand || 'Non défini';
-    const carModel = this.booking.carId?.model || '';
-    const startDate = this.datePipe.transform(this.booking.startDate, 'shortDate') || 'Non défini';
-    const endDate = this.datePipe.transform(this.booking.endDate, 'shortDate') || 'Non défini';
-    const totalAmount = this.booking.totalAmount || '0';
-
-    doc.setFontSize(12);
-    doc.text(`Numéro de réservation: ${bookingId}`, 14, 35);
-    doc.text(`Voiture: ${carBrand} ${carModel}`, 14, 45);
-    doc.text(`Date de début: ${startDate}`, 14, 55);
-    doc.text(`Date de fin: ${endDate}`, 14, 65);
-    doc.text(`Montant total: ${totalAmount} MAD`, 14, 75);
-
-    autoTable(doc, {
-      startY: 90,
-      head: [['Information', 'Valeur']],
-      body: [
-        ['Numéro de réservation', bookingId],
-        ['Voiture', `${carBrand} ${carModel}`],
-        ['Date de début', startDate],
-        ['Date de fin', endDate],
-        ['Montant total', `${totalAmount} MAD`],
-      ],
-      styles: {
-        font: 'helvetica',
-        fontSize: 12,
-        halign: 'left'
-      },
-      headStyles: {
-        halign: 'center',
-        fillColor: [63, 81, 181],
-        textColor: 255,
-        fontStyle: 'bold'
-      }
-    });
-
-    doc.save('payment_receipt.pdf');
+  calculateDuration(): number {
+    if (!this.booking || !this.booking.startDate || !this.booking.endDate) {
+      return 0;
+    }
+    const start = new Date(this.booking.startDate);
+    const end = new Date(this.booking.endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    return diffDays;
   }
 }

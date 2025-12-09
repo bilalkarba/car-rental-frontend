@@ -29,6 +29,12 @@ export class LoginComponent {
     });
   }
 
+  showPassword = false;
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
   onSubmit(): void {
     if (this.loginForm.invalid) {
       return;
@@ -45,7 +51,20 @@ export class LoginComponent {
     this.authService.login({ email, password }).subscribe({
       next: (response) => {
         console.log('Login successful:', response);
-        this.router.navigate(['/']);
+        console.log('User role:', response.user.role);
+        
+        // Store user data with role
+        localStorage.setItem('user_role', response.user.role);
+        
+        // Navigate based on role
+        // Navigate based on role
+        if (response.user.role === 'superadmin' || response.user.role === 'super admin') {
+          this.router.navigate(['/super-admin-dashboard']);
+        } else if (response.user.role === 'admin') {
+          this.router.navigate(['/admin-dashboard']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (error) => {
         console.error('Login error:', error);

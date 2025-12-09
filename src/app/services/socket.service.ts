@@ -64,6 +64,33 @@ export class SocketService {
     });
   }
 
+  // Listen for booking deleted
+  onBookingDeleted(): Observable<any> {
+    return new Observable(observer => {
+      this.socket.on('booking-deleted', (data: any) => {
+        observer.next(data);
+      });
+    });
+  }
+
+  // Listen for booking cancelled
+  onBookingCancelled(): Observable<any> {
+    return new Observable(observer => {
+      this.socket.on('booking-cancelled', (data: any) => {
+        observer.next(data);
+      });
+    });
+  }
+
+  // Listen for car returned
+  onCarReturned(): Observable<any> {
+    return new Observable(observer => {
+      this.socket.on('car-returned', (data: any) => {
+        observer.next(data);
+      });
+    });
+  }
+
   // Disconnect socket
   disconnect(): void {
     if (this.socket) {

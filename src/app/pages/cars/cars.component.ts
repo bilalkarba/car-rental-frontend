@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CarService } from '../../services/car.service';
+import { AgencyService } from '../../services/agency.service';
 import { TranslationService } from '../../services/translation.service';
 import { takeUntil, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -24,9 +25,11 @@ export class CarsComponent implements OnInit {
   pages: number[] = [];
 
   agencyAddresses: string[] = [];
+  agencies: any[] = [];
 
   constructor(
     private carService: CarService,
+    private agencyService: AgencyService,
     private translationService: TranslationService,
     private cd: ChangeDetectorRef,
     private ngZone: NgZone,
@@ -48,6 +51,9 @@ export class CarsComponent implements OnInit {
           this.cd.detectChanges();
         });
       });
+    
+    // Charger toutes les agences
+    this.loadAgencies();
     
     this.carService.getAllCars().subscribe({
       next: (res) => {
@@ -71,14 +77,43 @@ export class CarsComponent implements OnInit {
       });
   }
 
+  loadAgencies(): void {
+    this.agencyService.getAllAgencies().subscribe({
+      next: (agencies) => {
+        this.agencies = agencies;
+        // Extraire les adresses des agences
+        this.agencyAddresses = agencies
+          .map(agency => agency.location)
+          .filter((location, index, array) => array.indexOf(location) === index && location);
+      },
+      error: (err) => {
+        console.log('Error loading agencies:', err);
+        // Fallback: charger les adresses depuis les voitures
+        this.extractAgencyAddresses();
+      }
+    });
+  }
+
   extractAgencyAddresses(): void {
     const addresses = new Set<string>();
+    
+    // D'abord, utiliser les adresses des agences
+    this.agencies.forEach(agency => {
+      if (agency.location) {
+        addresses.add(agency.location);
+      }
+    });
+
+    // Ensuite, ajouter les adresses des voitures (fallback)
     this.cars.forEach(car => {
-      if (car.agencyId && car.agencyId.address) {
+      if (car.agencyId && car.agencyId.location) {
+        addresses.add(car.agencyId.location);
+      } else if (car.agencyId && car.agencyId.address) {
         addresses.add(car.agencyId.address);
       }
     });
-    this.agencyAddresses = Array.from(addresses);
+
+    this.agencyAddresses = Array.from(addresses).sort();
   }
 
   ngOnDestroy(): void {

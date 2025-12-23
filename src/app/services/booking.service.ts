@@ -34,4 +34,13 @@ export class BookingService {
   getBookingsByCarId(carId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/car/${carId}`);
   }
+
+  // 📧 Envoyer le reçu par email
+  sendReceiptEmail(bookingId: string): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/send-receipt/${bookingId}`,
+      {},
+      this.getHeaders()
+    );
+  }
 }

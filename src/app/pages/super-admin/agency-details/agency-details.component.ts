@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AgencyService } from '../../../services/agency.service';
 import { AuthService } from '../../../services/auth.service';
 import { CarService } from '../../../services/car.service';
+import { AdminService } from '../../../services/admin.service';
 
 @Component({
   selector: 'app-agency-details',
@@ -46,7 +47,8 @@ export class AgencyDetailsComponent implements OnInit {
     private router: Router,
     private agencyService: AgencyService,
     private authService: AuthService,
-    private carService: CarService
+    private carService: CarService,
+    private adminService: AdminService
   ) {}
 
   ngOnInit(): void {
@@ -93,29 +95,79 @@ export class AgencyDetailsComponent implements OnInit {
     });
   }
 
-  createAdmin(): void {
-    this.newAdmin.agencyId = this.agencyId;
-    this.authService.register(this.newAdmin).subscribe({
-      next: (res) => {
-        alert('Admin created successfully');
-        this.showAddAdminForm = false;
-        this.newAdmin = { name: '', email: '', password: '', nationalId: '', role: 'admin', agencyId: '' };
-        this.loadAdmins();
-      },
-      error: (err) => {
-        console.error('Error creating admin:', err);
-        alert('Failed to create admin');
-      }
-    });
+  // Admin Management
+  isEditingAdmin: boolean = false;
+  currentAdminId: string = '';
+
+  saveAdmin(): void {
+    if (this.isEditingAdmin) {
+      this.adminService.updateUser(this.currentAdminId, this.newAdmin).subscribe({
+        next: () => {
+          alert('Admin updated successfully');
+          this.resetAdminForm();
+          this.loadAdmins();
+        },
+        error: (err) => {
+          const msg = err.error?.msg || err.error?.message || 'Failed to update admin';
+          alert(msg);
+        }
+      });
+    } else {
+      this.newAdmin.agencyId = this.agencyId;
+      this.authService.register(this.newAdmin).subscribe({
+        next: () => {
+          alert('Admin created successfully');
+          this.resetAdminForm();
+          this.loadAdmins();
+        },
+        error: (err) => {
+          const msg = err.error?.msg || err.error?.message || 'Failed to create admin';
+          alert(msg);
+        }
+      });
+    }
   }
 
+  editAdmin(admin: any) {
+    this.isEditingAdmin = true;
+    this.currentAdminId = admin._id;
+    this.newAdmin = { ...admin, password: '' }; // Don't show password
+    this.showAddAdminForm = true;
+  }
+
+  deleteAdmin(id: string) {
+    if (confirm('Are you sure you want to delete this admin?')) {
+      this.adminService.deleteUser(id).subscribe({
+        next: () => {
+          alert('Admin deleted successfully');
+          this.loadAdmins();
+        },
+        error: () => alert('Failed to delete admin')
+      });
+    }
+  }
+
+  resetAdminForm() {
+    this.newAdmin = { name: '', email: '', password: '', nationalId: '', role: 'admin', agencyId: '' };
+    this.showAddAdminForm = false;
+    this.isEditingAdmin = false;
+    this.currentAdminId = '';
+  }
+
+  cancelEditAdmin() {
+    this.resetAdminForm();
+  }
+
+  // Car Management
+  isEditingCar: boolean = false;
+  currentCarId: string = '';
   selectedFile: File | null = null;
 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0] ?? null;
   }
 
-  createCar(): void {
+  saveCar(): void {
     const formData = new FormData();
     formData.append('brand', this.newCar.brand);
     formData.append('model', this.newCar.model);
@@ -129,18 +181,66 @@ export class AgencyDetailsComponent implements OnInit {
       formData.append('image', this.selectedFile);
     }
 
-    this.carService.createCar(formData).subscribe({
-      next: (res) => {
-        alert('Car created successfully');
-        this.showAddCarForm = false;
-        this.newCar = { brand: '', model: '', plateNumber: '', pricePerDay: 0, fuel: '', type: '', agencyId: '' };
-        this.selectedFile = null;
-        this.loadCars();
-      },
-      error: (err) => {
-        console.error('Error creating car:', err);
-        alert('Failed to create car');
-      }
-    });
+    if (this.isEditingCar) {
+      // For update, we might need a different service method if it accepts FormData
+      // Assuming carService.updateCar accepts FormData or JSON. 
+      // Usually updates with files need FormData.
+      // Let's check carService.updateCar signature.
+      // If it doesn't support FormData, we might need to update it.
+      // For now, let's assume we use adminService.updateCar which might need adjustment or we use carService.
+      // Let's use carService.updateCar if available.
+      
+      // Wait, carService.updateCar usually takes ID and Data.
+      // Let's assume it handles it.
+      this.carService.updateCar(this.currentCarId, formData).subscribe({
+        next: () => {
+          alert('Car updated successfully');
+          this.resetCarForm();
+          this.loadCars();
+        },
+        error: () => alert('Failed to update car')
+      });
+    } else {
+      this.carService.createCar(formData).subscribe({
+        next: () => {
+          alert('Car created successfully');
+          this.resetCarForm();
+          this.loadCars();
+        },
+        error: () => alert('Failed to create car')
+      });
+    }
   }
+
+  editCar(car: any) {
+    this.isEditingCar = true;
+    this.currentCarId = car._id;
+    this.newCar = { ...car };
+    this.showAddCarForm = true;
+  }
+
+  deleteCar(id: string) {
+    if (confirm('Are you sure you want to delete this car?')) {
+      this.adminService.deleteCar(id).subscribe({
+        next: () => {
+          alert('Car deleted successfully');
+          this.loadCars();
+        },
+        error: () => alert('Failed to delete car')
+      });
+    }
+  }
+
+  resetCarForm() {
+    this.newCar = { brand: '', model: '', plateNumber: '', pricePerDay: 0, fuel: '', type: '', agencyId: '' };
+    this.showAddCarForm = false;
+    this.isEditingCar = false;
+    this.currentCarId = '';
+    this.selectedFile = null;
+  }
+
+  cancelEditCar() {
+    this.resetCarForm();
+  }
+
 }

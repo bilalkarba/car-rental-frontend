@@ -39,8 +39,11 @@
       </div>
 
       <div *ngIf="showAddAdminForm" class="card mb-4 p-3 bg-light">
-        <h5>New Admin</h5>
-        <form (ngSubmit)="createAdmin()">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5>{{ isEditingAdmin ? 'Edit Admin' : 'New Admin' }}</h5>
+          <button class="btn btn-outline-secondary btn-sm" (click)="cancelEditAdmin()" *ngIf="isEditingAdmin">Cancel Edit</button>
+        </div>
+        <form (ngSubmit)="saveAdmin()">
           <div class="row">
             <div class="col-md-6 mb-2">
               <label>Name</label>
@@ -52,14 +55,15 @@
             </div>
             <div class="col-md-6 mb-2">
               <label>Password</label>
-              <input type="password" class="form-control" [(ngModel)]="newAdmin.password" name="adminPassword" required>
+              <input type="password" class="form-control" [(ngModel)]="newAdmin.password" name="adminPassword" [required]="!isEditingAdmin">
+              <small class="text-muted" *ngIf="isEditingAdmin">Leave blank to keep current password</small>
             </div>
             <div class="col-md-6 mb-2">
               <label>National ID</label>
               <input type="text" class="form-control" [(ngModel)]="newAdmin.nationalId" name="adminNationalId" required>
             </div>
           </div>
-          <button type="submit" class="btn btn-success mt-2">Create Admin</button>
+          <button type="submit" class="btn btn-success mt-2">{{ isEditingAdmin ? 'Update Admin' : 'Create Admin' }}</button>
         </form>
       </div>
 
@@ -69,6 +73,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>National ID</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -76,9 +81,13 @@
             <td>{{ admin.name }}</td>
             <td>{{ admin.email }}</td>
             <td>{{ admin.nationalId }}</td>
+            <td>
+              <button class="btn btn-sm btn-warning text-white me-2" (click)="editAdmin(admin)">Edit</button>
+              <button class="btn btn-sm btn-danger" (click)="deleteAdmin(admin._id)">Delete</button>
+            </td>
           </tr>
           <tr *ngIf="admins.length === 0">
-            <td colspan="3" class="text-center">No admins found for this agency.</td>
+            <td colspan="4" class="text-center">No admins found for this agency.</td>
           </tr>
         </tbody>
       </table>
@@ -94,8 +103,11 @@
       </div>
 
       <div *ngIf="showAddCarForm" class="card mb-4 p-3 bg-light">
-        <h5>New Car</h5>
-        <form (ngSubmit)="createCar()">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5>{{ isEditingCar ? 'Edit Car' : 'New Car' }}</h5>
+          <button class="btn btn-outline-secondary btn-sm" (click)="cancelEditCar()" *ngIf="isEditingCar">Cancel Edit</button>
+        </div>
+        <form (ngSubmit)="saveCar()">
           <div class="row">
             <div class="col-md-4 mb-2">
               <label>Brand</label>
@@ -136,7 +148,7 @@
               <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
             </div>
           </div>
-          <button type="submit" class="btn btn-success mt-2">Create Car</button>
+          <button type="submit" class="btn btn-success mt-2">{{ isEditingCar ? 'Update Car' : 'Create Car' }}</button>
         </form>
       </div>
 
@@ -147,6 +159,7 @@
             <th>Model</th>
             <th>Plate Number</th>
             <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -159,13 +172,19 @@
                 {{ car.available ? 'Available' : 'Rented' }}
               </span>
             </td>
+            <td>
+              <button class="btn btn-sm btn-warning text-white me-2" (click)="editCar(car)">Edit</button>
+              <button class="btn btn-sm btn-danger" (click)="deleteCar(car._id)">Delete</button>
+            </td>
           </tr>
           <tr *ngIf="cars.length === 0">
-            <td colspan="4" class="text-center">No cars found for this agency.</td>
+            <td colspan="5" class="text-center">No cars found for this agency.</td>
           </tr>
         </tbody>
       </table>
     </div>
+
+
   </div>
 </div>
 

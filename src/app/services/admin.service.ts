@@ -80,6 +80,7 @@ export class AdminService {
 
   // 👤 إضافة مشرف جديد
   // 👤 إضافة مشرف جديد
+  // 👤 إضافة مشرف جديد
   addAdmin(adminData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/register`, adminData, {
       headers: new HttpHeaders({
@@ -87,5 +88,15 @@ export class AdminService {
         // Content-Type must be undefined for FormData
       })
     });
+  }
+
+  // ✏️ تعديل مستخدم (Admin)
+  updateUser(id: string, userData: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/admin/users/${id}`, userData, this.getHeaders());
+  }
+
+  // 🗑️ حذف مستخدم
+  deleteUser(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/admin/users/${id}`, this.getHeaders());
   }
 }

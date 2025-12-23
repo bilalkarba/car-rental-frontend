@@ -74,16 +74,60 @@ export class SuperAdminDashboardComponent implements OnInit {
     });
   }
 
-  createAgency() {
-    this.agencyService.createAgency(this.newAgency).subscribe({
-      next: () => {
-        alert('Agency created successfully');
-        this.newAgency = { name: '', address: '', contactEmail: '', contactPhone: '' };
-        this.showAddForm = false;
-        this.loadAgencies();
-      },
-      error: () => alert('Failed to create agency')
-    });
+  isEditing: boolean = false;
+  currentAgencyId: string = '';
+
+  saveAgency() {
+    if (this.isEditing) {
+      this.agencyService.updateAgency(this.currentAgencyId, this.newAgency).subscribe({
+        next: () => {
+          alert('Agency updated successfully');
+          this.resetForm();
+          this.loadAgencies();
+        },
+        error: () => alert('Failed to update agency')
+      });
+    } else {
+      this.agencyService.createAgency(this.newAgency).subscribe({
+        next: () => {
+          alert('Agency created successfully');
+          this.resetForm();
+          this.loadAgencies();
+        },
+        error: () => alert('Failed to create agency')
+      });
+    }
+  }
+
+  editAgency(agency: any) {
+    this.isEditing = true;
+    this.currentAgencyId = agency._id;
+    this.newAgency = { ...agency }; // Copy data
+    this.showAddForm = true;
+    window.scrollTo(0, 0);
+  }
+
+  deleteAgency(id: string) {
+    if (confirm('Are you sure you want to delete this agency?')) {
+      this.agencyService.deleteAgency(id).subscribe({
+        next: () => {
+          alert('Agency deleted successfully');
+          this.loadAgencies();
+        },
+        error: () => alert('Failed to delete agency')
+      });
+    }
+  }
+
+  resetForm() {
+    this.newAgency = { name: '', address: '', contactEmail: '', contactPhone: '' };
+    this.showAddForm = false;
+    this.isEditing = false;
+    this.currentAgencyId = '';
+  }
+
+  cancelEdit() {
+    this.resetForm();
   }
 
   createAdmin() {

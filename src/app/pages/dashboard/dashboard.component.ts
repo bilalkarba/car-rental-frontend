@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CarService } from '../../services/car.service';
+import { AgencyService } from '../../services/agency.service';
 import { AuthService } from '../../services/auth.service';
 import { TranslationService } from '../../services/translation.service';
 import { Router } from '@angular/router';
@@ -19,13 +20,21 @@ export class DashboardComponent implements OnInit {
   isLoading: boolean = true;
   user: any;
   selectedBooking: any = null;
+  agencyInfo: any = {
+    name: '',
+    location: '',
+    phone: '',
+    email: ''
+  };
 
   constructor(
     private carService: CarService,
+    private agencyService: AgencyService,
     private authService: AuthService,
     public translationService: TranslationService,
     private router: Router,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private cdr: ChangeDetectorRef
   ) {}
 
  ngOnInit() {
@@ -34,7 +43,49 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/login']);
   } else {
     this.loadUserBookings();
+    this.loadAgencyInfo();
   }
+}
+
+loadAgencyInfo() {
+  if (this.user?.agencyId) {
+    this.agencyService.getAgencyById(this.user.agencyId).subscribe({
+      next: (agency) => {
+        this.mapAgencyInfo(agency);
+      },
+      error: (err) => {
+        console.log('Agency info not available, using defaults:', err);
+      }
+    });
+  } else {
+    // Charger la première agence par défaut si l'utilisateur n'a pas d'agencyId
+    this.agencyService.getAllAgencies().subscribe({
+      next: (agencies) => {
+        if (agencies && agencies.length > 0) {
+          this.mapAgencyInfo(agencies[0]);
+        }
+      },
+      error: (err) => {
+        console.log('No agencies found, using defaults:', err);
+      }
+    });
+  }
+}
+
+private mapAgencyInfo(agency: any): void {
+  console.log('Raw Agency Data:', agency); // Voir les données brutes
+  
+  this.agencyInfo = {
+    name: agency.name || 'N/A',
+    location: (agency.location || agency.address || 'N/A'),
+    phone: (agency.phone || agency.contactPhone || 'N/A'),
+    email: (agency.email || agency.contactEmail || 'N/A')
+  };
+  
+  console.log('Mapped Agency Info:', this.agencyInfo); // Voir les données mappées
+  
+  // Forcer Angular à détecter les changements
+  this.cdr.detectChanges();
 }
 
 loadUserBookings() {
@@ -48,6 +99,12 @@ loadUserBookings() {
         // إذا كانت بيانات السيارة تأتي عبر carId وليس car
         if (booking.carId && !booking.car) {
           booking.car = booking.carId;
+        }
+
+        // Log des données du car pour voir si agencyId est présent
+        if (booking.car) {
+          console.log('Car data:', booking.car);
+          console.log('Car agencyId:', booking.car.agencyId);
         }
 
         // Check if booking is confirmed and end date is passed
@@ -138,14 +195,71 @@ ${this.translationService.translate('booking.status') || 'Status'}: ${booking.st
     if (!booking || !booking.car) return;
     
     this.selectedBooking = booking;
+
+    // D'abord, vérifier si les données de l'agence sont déjà dans le booking
+    if (booking.car?.agencyId) {
+      console.log('Agency data from booking:', booking.car.agencyId);
+      
+      // Si agencyId est un objet complet avec les données
+      if (typeof booking.car.agencyId === 'object' && booking.car.agencyId.name) {
+        this.mapAgencyInfo(booking.car.agencyId);
+        this.generatePDFAndSendEmail(booking);
+      } else {
+        // Si agencyId est juste un ID, essayer de charger via l'API
+        const agencyId = booking.car.agencyId._id || booking.car.agencyId;
+        this.agencyService.getAgencyById(agencyId).subscribe({
+          next: (agency) => {
+            this.mapAgencyInfo(agency);
+            this.generatePDFAndSendEmail(booking);
+          },
+          error: (err) => {
+            console.log('Error loading agency via API (403), using car data:', err);
+            // Fallback: utiliser les données disponibles dans car.agencyId
+            if (typeof booking.car.agencyId === 'object') {
+              this.mapAgencyInfo(booking.car.agencyId);
+            }
+            this.generatePDFAndSendEmail(booking);
+          }
+        });
+      }
+    } else {
+      // Si pas d'agencyId, générer le PDF avec les infos actuelles
+      console.log('No agencyId found in booking');
+      this.generatePDFAndSendEmail(booking);
+    }
+  }
+
+  generatePDFAndSendEmail(booking: any) {
+    // Générer le PDF d'abord
+    this.generatePDF();
     
-    // Wait for view to update
+    // Ensuite envoyer l'email de reçu
+    if (booking._id) {
+      this.bookingService.sendReceiptEmail(booking._id).subscribe({
+        next: (response) => {
+          console.log('✅ Email de reçu envoyé:', response);
+        },
+        error: (err) => {
+          console.warn('⚠️ Erreur lors de l\'envoi de l\'email:', err);
+          // Ne pas bloquer l'utilisateur même si l'email échoue
+        }
+      });
+    }
+  }
+
+  generatePDF() {
+    // Mettre à jour selectedBooking et forcer la détection de changement
+    this.cdr.detectChanges();
+    
+    // Attendre plus longtemps pour que la vue soit vraiment mise à jour
     setTimeout(() => {
       const data = document.getElementById('dashboard-receipt-content');
       if (!data) {
         console.error('Receipt element not found');
         return;
       }
+      
+      console.log('Receipt Content HTML:', data.innerHTML.substring(0, 200)); // Déboguer le contenu
       
       html2canvas(data, { scale: 2 }).then(canvas => {
         const imgWidth = 210; // A4 width in mm
@@ -157,11 +271,12 @@ ${this.translationService.translate('booking.status') || 'Status'}: ${booking.st
         const position = 0;
         
         pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
-        pdf.save(`Recu_Paiement_${booking.car.brand}_${booking.car.model}.pdf`);
+        pdf.save(`Recu_Paiement_${this.selectedBooking.car.brand}_${this.selectedBooking.car.model}.pdf`);
         
         // Clear selected booking after download
         this.selectedBooking = null;
+        this.cdr.detectChanges();
       });
-    }, 100);
+    }, 300); // Augmenté de 100 à 300ms
   }
 }

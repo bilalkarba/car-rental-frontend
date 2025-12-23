@@ -56,14 +56,20 @@ export class CarsComponent implements OnInit {
     this.loadAgencies();
     
     this.carService.getAllCars().subscribe({
-      next: (res) => {
-        this.cars = res;  
-        this.filteredCars = [...this.cars]; 
-        this.extractAgencyAddresses();
-        this.updatePagination();
-      },
-      error: (err) => console.error(err)
-    });
+  next: (res) => {
+    this.cars = res.map(car => ({
+      ...car,
+      image: car.image?.startsWith('http')
+        ? car.image
+        : `https://car-rental-backend-production-c739.up.railway.app/${car.image}`
+    }));
+    this.filteredCars = [...this.cars]; 
+    this.extractAgencyAddresses();
+    this.updatePagination();
+  },
+  error: (err) => console.error(err)
+});
+
 
     // Real-time search
     this.searchForm.valueChanges

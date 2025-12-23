@@ -59,9 +59,7 @@ export class CarsComponent implements OnInit {
   next: (res) => {
     this.cars = res.map(car => ({
       ...car,
-      image: car.image?.startsWith('http')
-        ? car.image
-        : `https://car-rental-backend-production-c739.up.railway.app/${car.image}`
+      image: this.processImageUrl(car.image)
     }));
     this.filteredCars = [...this.cars]; 
     this.extractAgencyAddresses();
@@ -69,6 +67,7 @@ export class CarsComponent implements OnInit {
   },
   error: (err) => console.error(err)
 });
+
 
 
     // Real-time search
@@ -81,6 +80,18 @@ export class CarsComponent implements OnInit {
       .subscribe(() => {
         this.searchCars();
       });
+  }
+
+  private processImageUrl(imagePath: string): string {
+    if (!imagePath) return 'assets/placeholder-car.png';
+    
+    // If it's already a Cloudinary URL or external URL, keep it
+    if (imagePath.includes('cloudinary.com') || (imagePath.startsWith('http') && !imagePath.includes('localhost'))) {
+      return imagePath;
+    }
+    
+    // If it's a legacy localhost URL or relative path, return placeholder
+    return 'https://placehold.co/600x400?text=Image+Unavailable';
   }
 
   loadAgencies(): void {

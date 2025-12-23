@@ -9,7 +9,7 @@ export class SocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('http://localhost:3000', {
+    this.socket = io('https://car-rental-backend-production-c739.up.railway.app', {
       withCredentials: true
     });
   }

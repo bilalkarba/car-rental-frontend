@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class AgencyService {
-  private apiUrl = 'http://localhost:3000/api/agencies';
+  private apiUrl = 'https://car-rental-backend-production-c739.up.railway.app/api/agencies';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

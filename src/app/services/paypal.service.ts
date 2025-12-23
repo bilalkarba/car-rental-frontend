@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class PaypalService {
 
-  private apiUrl = 'http://localhost:3000/api/payments';
+  private apiUrl = 'https://car-rental-backend-production-c739.up.railway.app/api/payments';
 
   constructor(private http: HttpClient) {}
 

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({providedIn:'root'})
 export class CarService {
-  api = 'http://localhost:3000/api/cars';
+  api = 'https://car-rental-backend-production-c739.up.railway.app/api/cars';
   
   constructor(private http: HttpClient) {}
   

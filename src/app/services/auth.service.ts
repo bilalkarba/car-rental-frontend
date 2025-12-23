@@ -12,7 +12,7 @@ export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'user';
   private isBrowser: boolean;
-  private readonly API_URL = 'http://localhost:3000/api'; // Update with your backend URL
+  private readonly API_URL = 'https://car-rental-backend-production-c739.up.railway.app/api'; // Update with your backend URL
 
   constructor(
     private http: HttpClient,

@@ -195,10 +195,10 @@
                   <td><span class="badge bg-light text-dark border">{{ user.nationalId }}</span></td>
                   <td>
                     <div class="d-flex gap-2">
-                      <a *ngIf="user.cinFront" [href]="'http://localhost:3000/' + user.cinFront" target="_blank" class="btn btn-sm btn-outline-primary">
+                      <a *ngIf="user.cinFront" [href]="'https://car-rental-backend-production-c739.up.railway.app/' + user.cinFront" target="_blank" class="btn btn-sm btn-outline-primary">
                         <i class="fas fa-id-card"></i> {{ 'Front' | translate }}
                       </a>
-                      <a *ngIf="user.cinBack" [href]="'http://localhost:3000/' + user.cinBack" target="_blank" class="btn btn-sm btn-outline-primary">
+                      <a *ngIf="user.cinBack" [href]="'https://car-rental-backend-production-c739.up.railway.app/' + user.cinBack" target="_blank" class="btn btn-sm btn-outline-primary">
                         <i class="fas fa-id-card"></i> {{ 'Back' | translate }}
                       </a>
                       <span *ngIf="!user.cinFront && !user.cinBack" class="text-muted small">{{ 'No images' | translate }}</span>

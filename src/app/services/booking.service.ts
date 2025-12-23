@@ -5,7 +5,7 @@ import { delay } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class BookingService {
-  private apiUrl = 'http://localhost:3000/api/bookings';
+  private apiUrl = 'https://car-rental-backend-production-c739.up.railway.app/api/bookings';
 
   constructor(private http: HttpClient) {}
 

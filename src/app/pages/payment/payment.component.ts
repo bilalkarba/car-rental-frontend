@@ -50,7 +50,7 @@ export class PaymentComponent implements OnInit {
       startDate: this.bookingData.startDate,
       endDate: this.bookingData.endDate,
       amount: this.bookingData.totalAmount,
-      return_url: `${window.location.origin}/dashboard`,
+      return_url: `${window.location.origin}/payment-success`,
       cancel_url: `${window.location.origin}/payment-cancel`
     };
 

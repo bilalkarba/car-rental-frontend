@@ -42,6 +42,11 @@ export class PaymentSuccessComponent implements OnInit {
         next: (res) => {
           this.booking = res.booking;
           this.isLoading = false;
+          
+          // Redirect to dashboard after 2 seconds
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 2000);
         },
         error: () => {
           this.errorMessage = 'Erreur lors de la confirmation du paiement';

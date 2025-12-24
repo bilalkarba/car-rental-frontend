@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AgencyService {
-  private apiUrl = 'https://car-rental-backend-production-c739.up.railway.app/api/agencies';
+  private apiUrl = `${environment.apiUrl}/agencies`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

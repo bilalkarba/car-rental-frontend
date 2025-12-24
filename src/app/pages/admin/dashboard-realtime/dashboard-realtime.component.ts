@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
 import { TranslationService } from '../../../services/translation.service';
+import { environment } from '../../../../environments/environment';
 
 interface Notification {
   type: string;
@@ -19,6 +20,7 @@ interface Notification {
   standalone: false
 })
 export class DashboardRealtimeComponent implements OnInit, OnDestroy {
+  private readonly apiUrl = environment.apiUrl;
   notifications: Notification[] = [];
   private subscriptions: Subscription[] = [];
   stats = {
@@ -330,7 +332,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
 
   refreshBookings(): void {
     this.loading = true;
-    this.http.get<any[]>('https://car-rental-backend-production-c739.up.railway.app/api/bookings', this.getAuthHeaders())
+    this.http.get<any[]>(`${this.apiUrl}/bookings`, this.getAuthHeaders())
       .subscribe(
         (bookings: any[]) => {
           this.bookings = bookings;
@@ -346,7 +348,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
 
   toggleAvailability(car: any): void {
     const newAvailability = !car.available;
-    this.http.patch(`https://car-rental-backend-production-c739.up.railway.app/api/cars/${car._id}`, { available: newAvailability }, this.getAuthHeaders())
+    this.http.patch(`${this.apiUrl}/cars/${car._id}`, { available: newAvailability }, this.getAuthHeaders())
       .subscribe(() => {
         car.available = newAvailability;
         this.addNotification({
@@ -362,7 +364,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
 
   deleteCar(carId: string): void {
     if (confirm('هل أنت متأكد من حذف هذه السيارة؟')) {
-      this.http.delete(`https://car-rental-backend-production-c739.up.railway.app/api/cars/${carId}`, this.getAuthHeaders())
+      this.http.delete(`${this.apiUrl}/cars/${carId}`, this.getAuthHeaders())
         .subscribe(() => {
           this.cars = this.cars.filter(car => car._id !== carId);
           this.addNotification({
@@ -380,7 +382,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
   cancelBooking(bookingId: string): void {
     if (confirm('هل أنت متأكد من إلغاء هذا الحجز؟')) {
       const booking = this.bookings.find(b => b._id === bookingId);
-      this.http.patch(`https://car-rental-backend-production-c739.up.railway.app/api/bookings/${bookingId}/cancel`, {}, this.getAuthHeaders())
+      this.http.patch(`${this.apiUrl}/bookings/${bookingId}/cancel`, {}, this.getAuthHeaders())
         .subscribe(() => {
           // Update the booking status in the array
           const bookingIndex = this.bookings.findIndex(booking => booking._id === bookingId);
@@ -415,7 +417,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
   deleteBooking(bookingId: string): void {
     if (confirm('هل أنت متأكد من حذف هذا الحجز نهائياً؟ لا يمكن التراجع عن هذا الإجراء.')) {
       const booking = this.bookings.find(b => b._id === bookingId);
-      this.http.delete(`https://car-rental-backend-production-c739.up.railway.app/api/bookings/${bookingId}`, this.getAuthHeaders())
+      this.http.delete(`${this.apiUrl}/bookings/${bookingId}`, this.getAuthHeaders())
         .subscribe(() => {
           // Remove booking from array
           this.bookings = this.bookings.filter(b => b._id !== bookingId);
@@ -447,7 +449,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
   deleteUser(userId: string): void {
     if (confirm('هل أنت متأكد من حذف هذا المستخدم نهائياً؟ لا يمكن التراجع عن هذا الإجراء.')) {
       const user = this.users.find(u => u._id === userId);
-      this.http.delete(`https://car-rental-backend-production-c739.up.railway.app/api/admin/users/${userId}`, this.getAuthHeaders())
+      this.http.delete(`${this.apiUrl}/admin/users/${userId}`, this.getAuthHeaders())
         .subscribe(() => {
           // Remove user from array immediately
           this.users = this.users.filter(u => u._id !== userId);
@@ -471,7 +473,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
   syncCarStatus(): void {
     if (confirm('هل تريد مزامنة حالة جميع السيارات بناءً على الحجوزات النشطة؟')) {
       this.loading = true;
-      this.http.post('https://car-rental-backend-production-c739.up.railway.app/api/bookings/sync-car-status', {}, this.getAuthHeaders())
+      this.http.post(`${this.apiUrl}/bookings/sync-car-status`, {}, this.getAuthHeaders())
         .subscribe((response: any) => {
           this.loading = false;
           this.addNotification({
@@ -495,7 +497,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
     this.loading = true;
     
     // Load stats
-    this.http.get('https://car-rental-backend-production-c739.up.railway.app/api/admin/stats', this.getAuthHeaders()).subscribe(
+    this.http.get(`${this.apiUrl}/admin/stats`, this.getAuthHeaders()).subscribe(
       (data: any) => {
         this.stats = data;
         this.loading = false;
@@ -511,7 +513,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
     );
     
     // Load cars
-    this.http.get<any[]>('https://car-rental-backend-production-c739.up.railway.app/api/cars/my-agency', this.getAuthHeaders()).subscribe(
+    this.http.get<any[]>(`${this.apiUrl}/cars/my-agency`, this.getAuthHeaders()).subscribe(
       (cars: any[]) => {
         this.cars = cars;
       },
@@ -522,7 +524,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
     );
 
     // Load users
-    this.http.get<any[]>('https://car-rental-backend-production-c739.up.railway.app/api/admin/users', this.getAuthHeaders()).subscribe(
+    this.http.get<any[]>(`${this.apiUrl}/admin/users`, this.getAuthHeaders()).subscribe(
       (users: any[]) => {
         this.users = users;
       },
@@ -536,7 +538,7 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
     );
     
     // Load recent bookings
-    this.http.get<any[]>('https://car-rental-backend-production-c739.up.railway.app/api/bookings', this.getAuthHeaders())
+    this.http.get<any[]>(`${this.apiUrl}/bookings`, this.getAuthHeaders())
     .subscribe(
       (bookings: any[]) => {
         // Check for new bookings

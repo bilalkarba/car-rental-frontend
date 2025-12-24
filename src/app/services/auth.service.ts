@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'user';
   private isBrowser: boolean;
-  private readonly API_URL = 'https://car-rental-backend-production-c739.up.railway.app/api'; // Update with your backend URL
+  private readonly API_URL = environment.apiUrl;
 
   constructor(
     private http: HttpClient,

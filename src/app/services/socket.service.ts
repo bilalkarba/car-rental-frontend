@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,9 @@ export class SocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('https://car-rental-backend-production-c739.up.railway.app', {
+    // Extract base URL without /api suffix for socket connection
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    this.socket = io(baseUrl, {
       withCredentials: true
     });
   }

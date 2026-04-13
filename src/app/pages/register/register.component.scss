@@ -1,0 +1,135 @@
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: moveGrid 20s linear infinite;
+  }
+
+  .register-form {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    transform: translateY(0);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    animation: float 6s ease-in-out infinite;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #1a2a6c;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+
+        &:focus {
+          outline: none;
+          border-color: #1a2a6c;
+          box-shadow: 0 0 5px rgba(26, 42, 108, 0.2);
+        }
+
+        &.is-invalid {
+          border-color: #dc3545;
+        }
+      }
+
+      .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+      }
+    }
+
+    .error-message {
+      color: #dc3545;
+      text-align: center;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background: #1a2a6c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+
+      &:hover:not(:disabled) {
+        background: #0f1a47;
+      }
+
+      &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+@keyframes moveGrid {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(20px, 20px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@media (max-width: 480px) {
+  .register-container {
+    padding: 1rem;
+
+    .register-form {
+      padding: 2rem;
+    }
+  }
+}

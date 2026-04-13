@@ -1,0 +1,56 @@
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule]
+})
+
+export class LoginComponent {
+  loginForm: FormGroup;
+  isLoading = false;
+  error: string | null = null;
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
+
+  onSubmit(): void {
+    if (this.loginForm.invalid) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.error = null;
+
+    const { email, password } = this.loginForm.value;
+
+    this.authService.login({ email, password }).subscribe({
+      next: (response) => {
+        console.log('Login successful:', response);
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        console.error('Login error:', error);
+        this.error = 'فشل تسجيل الدخول. يرجى التحقق من بياناتك والمحاولة مرة أخرى';
+        this.isLoading = false;
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+}

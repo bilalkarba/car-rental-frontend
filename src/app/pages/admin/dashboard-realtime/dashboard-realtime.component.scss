@@ -1,0 +1,108 @@
+.notification-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  border-left: 4px solid;
+  animation: slideIn 0.3s ease-out;
+}
+
+.notification-item.alert-success {
+  border-left-color: #28a745;
+}
+
+.notification-item.alert-info {
+  border-left-color: #17a2b8;
+}
+
+.notification-item.alert-warning {
+  border-left-color: #ffc107;
+}
+
+.notification-item.alert-danger {
+  border-left-color: #dc3545;
+}
+
+.notification-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.notification-message {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.notification-time {
+  font-size: 0.8rem;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Table styles
+.car-image {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.no-image {
+  width: 60px;
+  height: 40px;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: #6c757d;
+}
+
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.btn-group .btn {
+  margin-right: 0.25rem;
+}
+
+.btn-group .btn:last-child {
+  margin-right: 0;
+}
+
+.clock {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #007bff;
+  
+  i {
+    color: #6c757d;
+  }
+}

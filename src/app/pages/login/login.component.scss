@@ -1,0 +1,74 @@
+.password-toggle-btn {
+  position: absolute;
+  top: 65%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  padding: 0.5rem;
+  
+  &:hover {
+    color: #0d6efd;
+  }
+}
+
+/* LTR (English/French) styling */
+:host-context([dir="ltr"]) .password-toggle-btn {
+  right: 15px;
+  left: auto;
+}
+
+:host-context([dir="ltr"]) .password-input {
+  padding-right: 3.5rem; /* Increased space for the icon */
+}
+
+/* RTL (Arabic) styling */
+:host-context([dir="rtl"]) .password-toggle-btn {
+  left: 15px;
+  right: auto;
+}
+
+:host-context([dir="rtl"]) .password-input {
+  padding-left: 3.5rem; /* Increased space for the icon */
+}
+
+/* Fix Register Link Clickability */
+.register-link {
+  position: relative;
+  z-index: 999; /* Ensure it's above any form floating elements */
+  cursor: pointer;
+  pointer-events: auto;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Clean up overlap in form floating */
+.form-floating {
+  z-index: 1; /* Keep it below 999 so it doesn't overlap link */
+}
+
+/* Text alignment for input fields based on language */
+:host-context([dir="rtl"]) .form-control {
+  text-align: right !important;
+}
+
+:host-context([dir="ltr"]) .form-control {
+  text-align: left !important;
+}
+
+/* Ensure password field container has relative positioning */
+.position-relative {
+  position: relative !important;
+}
+
+/* Adjust password input height */
+.password-input {
+  height: 3.5rem !important;
+}
+.email-input {
+  height: 3.5rem !important;
+}

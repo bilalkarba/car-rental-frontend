@@ -1,0 +1,28 @@
+<div class="booking-details" *ngIf="booking">
+  <h3>{{ 'bookingDetails' | translate }}</h3>
+
+  <div class="detail-item">
+    <span>{{ 'renterName' | translate }}:</span>
+    <span>{{ booking.user?.name || booking.userId?.name }}</span>
+  </div>
+
+  <div class="detail-item">
+    <span>{{ 'car' | translate }}:</span>
+    <span>{{ booking.carId.brand }} {{ booking.carId.model }}</span>
+  </div>
+
+  <div class="detail-item">
+    <span>{{ 'startDate' | translate }}:</span>
+    <span>{{ booking.startDate | date:'shortDate' }}</span>
+  </div>
+
+  <div class="detail-item">
+    <span>{{ 'endDate' | translate }}:</span>
+    <span>{{ booking.endDate | date:'shortDate' }}</span>
+  </div>
+
+  <div class="detail-item">
+    <span>{{ 'totalPrice' | translate }}:</span>
+    <span>{{ booking.totalAmount }} MAD</span>
+  </div>
+</div>

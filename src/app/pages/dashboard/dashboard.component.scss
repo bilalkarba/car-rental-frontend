@@ -1,0 +1,190 @@
+/* Dashboard Styles - Modern Premium Design */
+
+/* Animations */
+.animate-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover Effects */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+  }
+}
+
+.hover-scale {
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  text-align: center;
+  
+  h2 {
+    background: linear-gradient(to right, var(--primary-color, #2563eb), var(--accent-color, #f59e0b));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  
+  .divider {
+    background: linear-gradient(to right, var(--primary-color, #2563eb), var(--accent-color, #f59e0b));
+    height: 4px;
+    width: 60px;
+    margin: 0 auto;
+  }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3rem;
+  }
+}
+
+/* No Bookings Message */
+.no-bookings-message {
+  .icon-box {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border: 2px solid var(--border-color, #e2e8f0);
+    transition: all 0.3s ease;
+    
+    i {
+      color: var(--text-muted, #64748b);
+      font-size: 3rem;
+    }
+    
+    &:hover {
+      transform: scale(1.05);
+      border-color: var(--primary-color, #2563eb);
+      
+      i {
+        color: var(--primary-color, #2563eb);
+      }
+    }
+  }
+  
+  h3 {
+    color: var(--text-main, #0f172a);
+    font-weight: 600;
+  }
+  
+  p {
+    color: var(--text-muted, #64748b);
+  }
+}
+
+/* Bookings Grid */
+.bookings-grid {
+  .card {
+    border: 1px solid var(--border-color, #e2e8f0);
+    background: var(--surface-color, #ffffff);
+    overflow: hidden;
+    
+    .card-img-top {
+      transition: transform 0.3s ease;
+    }
+    
+    &:hover .card-img-top {
+      transform: scale(1.05);
+    }
+    
+    .badge {
+      font-weight: 600;
+      letter-spacing: 0.025em;
+      backdrop-filter: blur(8px);
+      
+      &.bg-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      }
+      
+      &.bg-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+      }
+      
+      &.bg-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+      }
+    }
+  }
+  
+  .card-body {
+    .card-title {
+      color: var(--text-main, #0f172a);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+    }
+    
+    .booking-details {
+      .text-muted {
+        color: var(--text-muted, #64748b) !important;
+      }
+      
+      i {
+        color: var(--primary-color, #2563eb);
+      }
+    }
+    
+    .border-top {
+      border-color: var(--border-color, #e2e8f0) !important;
+    }
+    
+    .btn-outline-primary {
+      border-color: var(--primary-color, #2563eb);
+      color: var(--primary-color, #2563eb);
+      font-weight: 500;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: var(--primary-color, #2563eb);
+        border-color: var(--primary-color, #2563eb);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+      }
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-header {
+    h2 {
+      font-size: 2rem;
+    }
+  }
+  
+  .bookings-grid {
+    .col-md-6 {
+      margin-bottom: 1rem;
+    }
+  }
+}

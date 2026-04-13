@@ -11,9 +11,9 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class AutoLogoutService {
   // 30 minutes in milliseconds
-  private readonly LOGOUT_TIME = 1 * 60 * 1000;
+  private readonly LOGOUT_TIME = 30 * 60 * 1000;
   // 29 minutes in milliseconds
-  private readonly WARNING_TIME = 0.5 * 60 * 1000;
+  private readonly WARNING_TIME = 29 * 60 * 1000;
   
   private destroy$ = new Subject<void>();
   private warningShown = false;

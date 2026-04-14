@@ -16,11 +16,13 @@ interface Notification {
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { RouterLink } from '@angular/router';
+import { AdminService } from '../../../services/admin.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard-realtime',
   standalone: true,
-  imports: [CommonModule, TranslatePipe, RouterLink],
+  imports: [CommonModule, TranslatePipe, RouterLink, FormsModule],
   templateUrl: './dashboard-realtime.component.html',
   styleUrls: ['./dashboard-realtime.component.scss']
 })
@@ -40,12 +42,19 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
   private refreshInterval: any;
   private clockInterval: any;
   currentTime: Date = new Date();
+  
+
+  // Cancellation tracking
+  cancelReasonInput: string = '';
+  selectedBookingId: string = '';
+  submittingCancellation: boolean = false;
 
   constructor(
     private socketService: SocketService,
     private http: HttpClient,
-    private authService: AuthService,
-    private translationService: TranslationService
+    public authService: AuthService,
+    private translationService: TranslationService,
+    private adminService: AdminService
   ) { }
 
   ngOnInit(): void {
@@ -297,23 +306,40 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
 
   getTimeAgo(timestamp: Date): string {
     const seconds = Math.floor((new Date().getTime() - new Date(timestamp).getTime()) / 1000);
+    const lang = this.translationService.getCurrentLanguage();
     
     if (seconds < 60) {
-      return 'الآن';
+      return this.translationService.translate('time.now');
     }
+    
+    let count: number;
+    let unitKey: string;
     
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) {
-      return `منذ ${minutes} دقيقة`;
+      count = minutes;
+      unitKey = minutes > 1 ? 'time.minutes' : 'time.minute';
+    } else {
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) {
+        count = hours;
+        unitKey = hours > 1 ? 'time.hours' : 'time.hour';
+      } else {
+        const days = Math.floor(hours / 24);
+        count = days;
+        unitKey = days > 1 ? 'time.days' : 'time.day';
+      }
     }
-    
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) {
-      return `منذ ${hours} ساعة`;
+
+    const translatedUnit = this.translationService.translate(unitKey);
+    const ago = this.translationService.translate('time.ago');
+
+    if (lang === 'en') {
+      return `${count} ${translatedUnit} ${ago}`;
+    } else {
+      // Pour FR (Il y a X min) et AR (منذ X دقيقة)
+      return `${ago} ${count} ${translatedUnit}`;
     }
-    
-    const days = Math.floor(hours / 24);
-    return `منذ ${days} يوم`;
   }
 
   private getAuthHeaders() {
@@ -353,18 +379,38 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
 
   toggleAvailability(car: any): void {
     const newAvailability = !car.available;
-    this.http.patch(`${this.apiUrl}/cars/${car._id}`, { available: newAvailability }, this.getAuthHeaders())
-      .subscribe(() => {
-        car.available = newAvailability;
-        this.addNotification({
-          type: 'info',
-          message: `${this.translationService.translate('notification.carUpdated')} ${car.brand} ${car.model}`,
-          timestamp: new Date(),
-          icon: 'fa-exchange-alt'
-        });
-      }, error => {
-        console.error('Error updating car availability:', error);
+    // Try AdminService first, fallback to direct PATCH if needed
+    this.adminService.updateCarAvailability(car._id, newAvailability)
+      .subscribe({
+        next: () => {
+          this.handleToggleSuccess(car, newAvailability);
+        },
+        error: (error) => {
+          console.warn('AdminService toggle failed, trying direct patch...', error);
+          this.http.patch(`${this.apiUrl}/cars/${car._id}`, { available: newAvailability }, this.getAuthHeaders())
+            .subscribe({
+              next: () => this.handleToggleSuccess(car, newAvailability),
+              error: (patchError) => {
+                console.error('All toggle attempts failed:', patchError);
+                alert('Failed to update car status. Please try again.');
+              }
+            });
+        }
       });
+  }
+
+  private handleToggleSuccess(car: any, newAvailability: boolean): void {
+    car.available = newAvailability;
+    // Update local stats in real-time
+    this.stats.availableCars = this.cars.filter(c => c.available).length;
+    this.stats.totalCars = this.cars.length;
+    
+    this.addNotification({
+      type: 'info',
+      message: `${this.translationService.translate('notification.carUpdated')} ${car.brand} ${car.model}`,
+      timestamp: new Date(),
+      icon: 'fa-exchange-alt'
+    });
   }
 
   deleteCar(carId: string): void {
@@ -385,14 +431,32 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
   }
 
   cancelBooking(bookingId: string): void {
-    if (confirm('هل أنت متأكد من إلغاء هذا الحجز؟')) {
-      const booking = this.bookings.find(b => b._id === bookingId);
-      this.http.patch(`${this.apiUrl}/bookings/${bookingId}/cancel`, {}, this.getAuthHeaders())
-        .subscribe(() => {
+    this.selectedBookingId = bookingId;
+    this.cancelReasonInput = '';
+    // The modal will be triggered by data-bs-toggle in HTML
+  }
+
+  confirmCancellation(): void {
+    if (!this.selectedBookingId) return;
+    if (!this.cancelReasonInput.trim()) {
+      alert(this.translationService.translate('provideCancelReason'));
+      return;
+    }
+
+    this.submittingCancellation = true;
+    const bookingId = this.selectedBookingId;
+    const booking = this.bookings.find(b => b._id === bookingId);
+    
+    this.http.patch(`${this.apiUrl}/bookings/${bookingId}/cancel`, { cancelReason: this.cancelReasonInput }, this.getAuthHeaders())
+      .subscribe({
+        next: () => {
           // Update the booking status in the array
           const bookingIndex = this.bookings.findIndex(booking => booking._id === bookingId);
           if (bookingIndex !== -1) {
             this.bookings[bookingIndex].status = 'cancelled';
+            this.bookings[bookingIndex].cancelReason = this.cancelReasonInput;
+            this.bookings[bookingIndex].cancelledBy = this.authService.getUser(); // For immediate UI update
+            this.bookings[bookingIndex].cancelledAt = new Date();
           }
           
           // Update car availability if booking had a car
@@ -410,13 +474,20 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
             icon: 'fa-calendar-times'
           });
           
+          this.submittingCancellation = false;
+          this.selectedBookingId = '';
+          this.cancelReasonInput = '';
+          
+          // Close modal programmatically if needed, but data-bs-dismiss on button handles it
           // Refresh data to update stats
           this.loadInitialData();
-        }, error => {
+        },
+        error: (error) => {
+          this.submittingCancellation = false;
           console.error('Error cancelling booking:', error);
           alert('حدث خطأ أثناء إلغاء الحجز. الرجاء المحاولة مرة أخرى.');
-        });
-    }
+        }
+      });
   }
 
   deleteBooking(bookingId: string): void {
@@ -504,15 +575,17 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
     // Load stats
     this.http.get(`${this.apiUrl}/admin/stats`, this.getAuthHeaders()).subscribe(
       (data: any) => {
-        this.stats = data;
+        // Merge data, but prioritize valid car list counts
+        this.stats = { 
+          ...this.stats, 
+          ...data,
+          totalCars: this.cars.length > 0 ? this.cars.length : (data.totalCars > -1 ? data.totalCars : 0),
+          availableCars: this.cars.length > 0 ? this.cars.filter(c => c.available).length : (data.availableCars > -1 ? data.availableCars : 0)
+        };
         this.loading = false;
       },
       error => {
         console.error('Error loading stats:', error);
-        if (error.status === 403) {
-          console.error('Access forbidden. User may not have admin privileges or token may be expired.');
-          this.authService.logout();
-        }
         this.loading = false;
       }
     );
@@ -521,6 +594,9 @@ export class DashboardRealtimeComponent implements OnInit, OnDestroy {
     this.http.get<any[]>(`${this.apiUrl}/cars/my-agency`, this.getAuthHeaders()).subscribe(
       (cars: any[]) => {
         this.cars = cars;
+        // recalculate stats immediately
+        this.stats.totalCars = cars.length;
+        this.stats.availableCars = cars.filter(c => c.available).length;
       },
       error => {
         console.error('Error loading cars:', error);

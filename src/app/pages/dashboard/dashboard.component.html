@@ -141,6 +141,18 @@
                     {{ translationService.translate('bookingDetails') || 'Détails réservation' }}
                   </small>
                 </div>
+
+                <!-- Cancel Booking Button -->
+                <div class="text-center" *ngIf="canCancel(booking)">
+                  <button class="btn btn-outline-danger rounded-circle p-0 d-flex align-items-center justify-content-center hover-scale shadow-sm" 
+                          style="width: 70px; height: 70px;"
+                          (click)="cancelBooking(booking._id)">
+                    <i class="fas fa-trash-alt fa-2x"></i>
+                  </button>
+                  <small class="d-block mt-2 text-danger fw-bold">
+                    {{ translationService.translate('cancel') || 'Annuler' }}
+                  </small>
+                </div>
               </div>
             </div>
           </div>
@@ -155,6 +167,9 @@
   <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
     <h1 style="margin: 0; font-size: 24px; text-transform: uppercase;">Reçu de Paiement</h1>
     <p style="margin: 5px 0; font-size: 14px; color: #666;">DriveNow Car Rental</p>
+    <div *ngIf="selectedBooking.status === 'cancelled'" style="margin-top: 15px; padding: 10px; border: 3px solid #dc3545; color: #dc3545; font-size: 28px; font-weight: bold; display: inline-block; transform: rotate(-5deg); text-transform: uppercase; border-radius: 8px;">
+      ANNULÉ
+    </div>
   </div>
 
   <!-- Agency Information -->
@@ -219,6 +234,6 @@
 
   <div style="margin-top: 60px; text-align: center; font-size: 12px; color: #999;">
     <p>Merci d'avoir choisi DriveNow pour votre location.</p>
-    <p>Ce reçu est généré électroniquement.</p>
+    <p>Ce reçu est généré électroniquement le {{ currentTime | date:'dd/MM/yyyy' }} à {{ currentTime | date:'HH:mm:ss' }}</p>
   </div>
 </div>

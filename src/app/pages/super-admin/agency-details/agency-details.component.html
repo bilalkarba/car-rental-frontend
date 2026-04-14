@@ -169,7 +169,7 @@
             <td>{{ car.plateNumber }}</td>
             <td>
               <span class="badge" [class.bg-success]="car.available" [class.bg-danger]="!car.available">
-                {{ car.available ? 'Available' : 'Rented' }}
+                {{ car.available ? 'Available' : 'Unavailable' }}
               </span>
             </td>
             <td>
@@ -178,7 +178,7 @@
             </td>
           </tr>
           <tr *ngIf="cars.length === 0">
-            <td colspan="5" class="text-center">No cars found for this agency.</td>
+            <td colspan="4" class="text-center">No cars found for this agency.</td>
           </tr>
         </tbody>
       </table>

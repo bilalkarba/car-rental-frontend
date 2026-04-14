@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { io, Socket } from 'socket.io-client';
+import Pusher from 'pusher-js';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -7,25 +7,29 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class SocketService {
-  private socket: Socket;
+  private pusher: Pusher;
+  private channel: any;
 
   constructor() {
-    // Extract base URL without /api suffix for socket connection
-    const baseUrl = environment.apiUrl.replace('/api', '');
-    this.socket = io(baseUrl, {
-      withCredentials: true
+    // Initialize Pusher
+    this.pusher = new Pusher(environment.pusherKey || 'your_pusher_key', {
+      cluster: environment.pusherCluster || 'eu',
+      forceTLS: true
     });
+
+    // Subscribe to the admin channel
+    this.channel = this.pusher.subscribe('admin-channel');
   }
 
-  // Join admin room for dashboard updates
+  // Join admin room (Not needed for Pusher but kept for API compatibility)
   joinAdminRoom(): void {
-    this.socket.emit('join-admin');
+    console.log('📡 Pusher: Subscribed to admin-channel');
   }
 
   // Listen for new bookings
   onNewBooking(): Observable<any> {
     return new Observable(observer => {
-      this.socket.on('new-booking', (data: any) => {
+      this.channel.bind('new-booking', (data: any) => {
         observer.next(data);
       });
     });
@@ -34,7 +38,7 @@ export class SocketService {
   // Listen for car added
   onCarAdded(): Observable<any> {
     return new Observable(observer => {
-      this.socket.on('car-added', (data: any) => {
+      this.channel.bind('car-added', (data: any) => {
         observer.next(data);
       });
     });
@@ -43,7 +47,7 @@ export class SocketService {
   // Listen for car updated
   onCarUpdated(): Observable<any> {
     return new Observable(observer => {
-      this.socket.on('car-updated', (data: any) => {
+      this.channel.bind('car-updated', (data: any) => {
         observer.next(data);
       });
     });
@@ -52,7 +56,7 @@ export class SocketService {
   // Listen for car deleted
   onCarDeleted(): Observable<any> {
     return new Observable(observer => {
-      this.socket.on('car-deleted', (data: any) => {
+      this.channel.bind('car-deleted', (data: any) => {
         observer.next(data);
       });
     });
@@ -61,7 +65,7 @@ export class SocketService {
   // Listen for car availability changes
   onCarAvailabilityChanged(): Observable<any> {
     return new Observable(observer => {
-      this.socket.on('car-availability-changed', (data: any) => {
+      this.channel.bind('car-availability-changed', (data: any) => {
         observer.next(data);
       });
     });
@@ -70,7 +74,7 @@ export class SocketService {
   // Listen for booking deleted
   onBookingDeleted(): Observable<any> {
     return new Observable(observer => {
-      this.socket.on('booking-deleted', (data: any) => {
+      this.channel.bind('booking-deleted', (data: any) => {
         observer.next(data);
       });
     });
@@ -79,7 +83,7 @@ export class SocketService {
   // Listen for booking cancelled
   onBookingCancelled(): Observable<any> {
     return new Observable(observer => {
-      this.socket.on('booking-cancelled', (data: any) => {
+      this.channel.bind('booking-cancelled', (data: any) => {
         observer.next(data);
       });
     });
@@ -88,16 +92,16 @@ export class SocketService {
   // Listen for car returned
   onCarReturned(): Observable<any> {
     return new Observable(observer => {
-      this.socket.on('car-returned', (data: any) => {
+      this.channel.bind('car-returned', (data: any) => {
         observer.next(data);
       });
     });
   }
 
-  // Disconnect socket
+  // Disconnect Pusher
   disconnect(): void {
-    if (this.socket) {
-      this.socket.disconnect();
+    if (this.pusher) {
+      this.pusher.disconnect();
     }
   }
 }

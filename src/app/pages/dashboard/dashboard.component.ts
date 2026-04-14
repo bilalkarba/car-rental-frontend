@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit {
   isLoading: boolean = true;
   user: any;
   selectedBooking: any = null;
+  currentTime: Date = new Date();
   agencyInfo: any = {
     name: '',
     location: '',
@@ -285,6 +286,37 @@ ${this.translationService.translate('booking.status') || 'Status'}: ${booking.st
         this.cdr.detectChanges();
       });
     }, 300); // Augmenté de 100 à 300ms
+  }
+
+  canCancel(booking: any): boolean {
+    if (!booking) return false;
+    // can only cancel if status is pending/confirmed AND current time < startDate
+    const now = new Date();
+    const startDate = new Date(booking.startDate);
+    
+    const isActive = booking.status === 'confirmed' || booking.status === 'pending';
+    const isFuture = startDate > now;
+    
+    return isActive && isFuture;
+  }
+
+  cancelBooking(bookingId: string) {
+    if (!confirm(this.translationService.translate('booking.confirmCancel') || 'Are you sure you want to cancel this booking?')) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.bookingService.cancelBooking(bookingId, 'Cancelled by customer via dashboard').subscribe({
+      next: () => {
+        alert(this.translationService.translate('booking.cancelSuccess') || 'Booking cancelled successfully');
+        this.loadUserBookings(); // Refresh list
+      },
+      error: (err) => {
+        console.error('Error cancelling booking:', err);
+        alert(err.error?.msg || 'Failed to cancel booking. Please contact support.');
+        this.isLoading = false;
+      }
+    });
   }
 
   trackByBooking(index: number, booking: any): string {

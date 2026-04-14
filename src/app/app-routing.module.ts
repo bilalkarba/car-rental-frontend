@@ -38,7 +38,7 @@ const routes: Routes = [
   { 
     path: 'add-car', 
     loadComponent: () => import('./admin-dashboard/add-car/add-car.component').then(m => m.AddCarComponent),
-    canActivate: [authGuard, adminGuard] 
+    canActivate: [authGuard, superAdminGuard] 
   },
   { 
     path: 'add-admin', 
@@ -58,7 +58,7 @@ const routes: Routes = [
   { 
     path: 'edit-car/:id', 
     loadComponent: () => import('./admin-dashboard/edit-car/edit-car.component').then(m => m.EditCarComponent),
-    canActivate: [authGuard, adminGuard] 
+    canActivate: [authGuard, superAdminGuard] 
   },
   { 
     path: 'payment', 

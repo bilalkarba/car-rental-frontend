@@ -43,4 +43,13 @@ export class BookingService {
       this.getHeaders()
     );
   }
+
+  // ❌ Annuler une réservation
+  cancelBooking(bookingId: string, cancelReason: string = ''): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}/${bookingId}/cancel`,
+      { cancelReason },
+      this.getHeaders()
+    );
+  }
 }

@@ -106,3 +106,25 @@
     color: #6c757d;
   }
 }
+
+.custom-switch {
+  width: 3rem !important;
+  height: 1.5rem !important;
+  cursor: pointer;
+  
+  &:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+  }
+  
+  &:focus {
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+    border-color: #28a745;
+  }
+}
+
+
+.badge {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}

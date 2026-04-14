@@ -8,18 +8,24 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
   selector: 'app-super-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgChartsModule, RouterLink],
+  imports: [CommonModule, FormsModule, NgChartsModule, RouterLink, TranslatePipe],
   templateUrl: './super-admin-dashboard.component.html',
   styleUrls: ['./super-admin-dashboard.component.scss']
 })
 export class SuperAdminDashboardComponent implements OnInit {
 
   agencies: any[] = [];
+  cancelledBookings: any[] = [];
   isLoading: boolean = true;
+  private readonly apiUrl = environment.apiUrl;
 
   newAgency = { name: '', address: '', contactEmail: '', contactPhone: '' };
   showAddForm: boolean = false;
@@ -47,7 +53,9 @@ export class SuperAdminDashboardComponent implements OnInit {
     private agencyService: AgencyService,
     private authService: AuthService,
     private router: Router,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private http: HttpClient,
+    public translationService: TranslationService
   ) {}
 
   ngOnInit() {
@@ -57,11 +65,12 @@ export class SuperAdminDashboardComponent implements OnInit {
     }
 
     this.loadAgencies();
+    this.loadCancelledBookings();
 
     this.socketService.joinAdminRoom();
-    this.socketService.onNewBooking().subscribe(() => this.loadAgencies());
-    this.socketService.onBookingDeleted().subscribe(() => this.loadAgencies());
-    this.socketService.onBookingCancelled().subscribe(() => this.loadAgencies());
+    this.socketService.onNewBooking().subscribe(() => { this.loadAgencies(); this.loadCancelledBookings(); });
+    this.socketService.onBookingDeleted().subscribe(() => { this.loadAgencies(); this.loadCancelledBookings(); });
+    this.socketService.onBookingCancelled().subscribe(() => { this.loadAgencies(); this.loadCancelledBookings(); });
   }
 
   loadAgencies() {
@@ -147,6 +156,18 @@ export class SuperAdminDashboardComponent implements OnInit {
         this.showAddAdminForm = false;
       },
       error: () => alert('Failed to create admin')
+    });
+  }
+
+  loadCancelledBookings() {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    this.http.get<any[]>(`${this.apiUrl}/bookings`, { headers }).subscribe({
+      next: (data) => {
+        this.cancelledBookings = data.filter(b => b.status === 'cancelled');
+      },
+      error: (err) => console.error('Error loading bookings:', err)
     });
   }
 }

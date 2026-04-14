@@ -1,45 +1,98 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './pages/login/login.component';
-import { RegisterComponent } from './pages/register/register.component';
-import { HomeComponent } from './pages/home/home.component';
-import { CarsComponent } from './pages/cars/cars.component';
-import { CarDetailsComponent } from './pages/car-details/car-details.component';
-import { AddCarComponent } from './admin-dashboard/add-car/add-car.component';
-import { EditCarComponent } from './admin-dashboard/edit-car/edit-car.component';
-import { AddAdminComponent } from './admin-dashboard/add-admin/add-admin.component';
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
-import { PaymentComponent } from './pages/payment/payment.component';
-import { PaymentSuccessComponent } from './pages/payment-success/payment-success.component';
-import { PaymentCancelComponent } from './pages/payment-cancel/payment-cancel.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { DashboardRealtimeComponent } from './pages/admin/dashboard-realtime/dashboard-realtime.component';
-import { NotFoundComponent } from './pages/not-found/not-found.component';
-import { SuperAdminDashboardComponent } from './pages/super-admin/dashboard/super-admin-dashboard.component';
-import { AgencyDetailsComponent } from './pages/super-admin/agency-details/agency-details.component';
 import { superAdminGuard } from './guards/super-admin.guard';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'home', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'cars', component: CarsComponent },
-  { path: 'cars/:id', component: CarDetailsComponent , canActivate: [authGuard] },
-  { path: 'admin-dashboard', component: DashboardRealtimeComponent , canActivate: [authGuard, adminGuard] },
-  { path: 'add-car', component: AddCarComponent , canActivate: [authGuard, adminGuard] },
-  { path: 'add-admin', component: AddAdminComponent , canActivate: [authGuard, adminGuard] },
-  { path: 'dashboard', component: DashboardComponent , canActivate: [authGuard] },
-  { path: 'dashboard-realtime', component: DashboardRealtimeComponent , canActivate: [authGuard, adminGuard] },
-  { path: 'edit-car/:id', component: EditCarComponent , canActivate: [authGuard, adminGuard] },
-  { path: 'payment', component: PaymentComponent , canActivate: [authGuard] },
-  { path: 'payment-success', component: PaymentSuccessComponent , canActivate: [authGuard] },
-  { path: 'payment-cancel', component: PaymentCancelComponent , canActivate: [authGuard] },
-  { path: 'super-admin-dashboard', component: SuperAdminDashboardComponent, canActivate: [authGuard, superAdminGuard] },
-  { path: 'super-admin/agency/:id', component: AgencyDetailsComponent, canActivate: [authGuard, superAdminGuard] },
-  { path: 'not-found', component: NotFoundComponent },
-  { path: '**', component: NotFoundComponent }
+  { 
+    path: '', 
+    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent) 
+  },
+  { 
+    path: 'home', 
+    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent) 
+  },
+  { 
+    path: 'login', 
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent) 
+  },
+  { 
+    path: 'register', 
+    loadComponent: () => import('./pages/register/register.component').then(m => m.RegisterComponent) 
+  },
+  { 
+    path: 'cars', 
+    loadComponent: () => import('./pages/cars/cars.component').then(m => m.CarsComponent) 
+  },
+  { 
+    path: 'cars/:id', 
+    loadComponent: () => import('./pages/car-details/car-details.component').then(m => m.CarDetailsComponent),
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'admin-dashboard', 
+    loadComponent: () => import('./pages/admin/dashboard-realtime/dashboard-realtime.component').then(m => m.DashboardRealtimeComponent),
+    canActivate: [authGuard, adminGuard] 
+  },
+  { 
+    path: 'add-car', 
+    loadComponent: () => import('./admin-dashboard/add-car/add-car.component').then(m => m.AddCarComponent),
+    canActivate: [authGuard, adminGuard] 
+  },
+  { 
+    path: 'add-admin', 
+    loadComponent: () => import('./admin-dashboard/add-admin/add-admin.component').then(m => m.AddAdminComponent),
+    canActivate: [authGuard, adminGuard] 
+  },
+  { 
+    path: 'dashboard', 
+    loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'dashboard-realtime', 
+    loadComponent: () => import('./pages/admin/dashboard-realtime/dashboard-realtime.component').then(m => m.DashboardRealtimeComponent),
+    canActivate: [authGuard, adminGuard] 
+  },
+  { 
+    path: 'edit-car/:id', 
+    loadComponent: () => import('./admin-dashboard/edit-car/edit-car.component').then(m => m.EditCarComponent),
+    canActivate: [authGuard, adminGuard] 
+  },
+  { 
+    path: 'payment', 
+    loadComponent: () => import('./pages/payment/payment.component').then(m => m.PaymentComponent),
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'payment-success', 
+    loadComponent: () => import('./pages/payment-success/payment-success.component').then(m => m.PaymentSuccessComponent),
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'payment-cancel', 
+    loadComponent: () => import('./pages/payment-cancel/payment-cancel.component').then(m => m.PaymentCancelComponent),
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'super-admin-dashboard', 
+    loadComponent: () => import('./pages/super-admin/dashboard/super-admin-dashboard.component').then(m => m.SuperAdminDashboardComponent),
+    canActivate: [authGuard, superAdminGuard] 
+  },
+  { 
+    path: 'super-admin/agency/:id', 
+    loadComponent: () => import('./pages/super-admin/agency-details/agency-details.component').then(m => m.AgencyDetailsComponent),
+    canActivate: [authGuard, superAdminGuard] 
+  },
+  { 
+    path: 'not-found', 
+    loadComponent: () => import('./pages/not-found/not-found.component').then(m => m.NotFoundComponent) 
+  },
+  { 
+    path: '**', 
+    loadComponent: () => import('./pages/not-found/not-found.component').then(m => m.NotFoundComponent) 
+  }
 ];
 
 @NgModule({

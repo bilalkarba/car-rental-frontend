@@ -1,10 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef, NgZone, Inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone, Inject, PLATFORM_ID } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
 import { TranslationService, LanguageCode } from './services/translation.service';
 import { takeUntil, Subject } from 'rxjs';
 import { LanguageStorageService } from './services/language-storage.service';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import AOS from 'aos';
 import { AutoLogoutService } from './services/auto-logout.service';
 
@@ -26,15 +26,18 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private languageStorageService: LanguageStorageService,
     private autoLogout: AutoLogoutService,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
-    AOS.init({
-      duration: 800,
-      once: true,
-      mirror: false
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      AOS.init({
+        duration: 800,
+        once: true,
+        mirror: false
+      });
+    }
 
     this.autoLogout.startMonitoring();
 

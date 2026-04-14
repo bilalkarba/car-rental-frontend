@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { PaypalService } from '../../services/paypal.service';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
+import { TranslatePipe } from "../../pipes/translate.pipe";
 
 @Component({
   selector: 'app-payment',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, TranslatePipe],
+  providers: [DatePipe],
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.scss']
 })

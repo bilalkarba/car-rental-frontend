@@ -5,11 +5,17 @@ import { AuthService } from '../../../services/auth.service';
 import { CarService } from '../../../services/car.service';
 import { AdminService } from '../../../services/admin.service';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from "../../../pipes/translate.pipe";
+import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-agency-details',
+  standalone: true,
+  imports: [CommonModule, FormsModule, TranslatePipe, RouterLink],
   templateUrl: './agency-details.component.html',
-  styleUrls: ['./agency-details.component.scss'],
-  standalone: false
+  styleUrls: ['./agency-details.component.scss']
 })
 export class AgencyDetailsComponent implements OnInit {
   agencyId: string = '';

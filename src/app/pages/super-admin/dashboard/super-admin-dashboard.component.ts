@@ -4,8 +4,15 @@ import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { SocketService } from '../../../services/socket.service';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NgChartsModule } from 'ng2-charts';
+import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-super-admin-dashboard',
+  standalone: true,
+  imports: [CommonModule, FormsModule, NgChartsModule, RouterLink],
   templateUrl: './super-admin-dashboard.component.html',
   styleUrls: ['./super-admin-dashboard.component.scss']
 })

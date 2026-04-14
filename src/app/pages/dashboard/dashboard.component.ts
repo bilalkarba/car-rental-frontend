@@ -9,9 +9,16 @@ import { BookingService } from '../../services/booking.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
+import { TranslatePipe } from "../../pipes/translate.pipe";
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+
+import { NgOptimizedImage } from '@angular/common';
+
 @Component({
   selector: 'app-dashboard',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, TranslatePipe, RouterLink, NgOptimizedImage],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -278,5 +285,9 @@ ${this.translationService.translate('booking.status') || 'Status'}: ${booking.st
         this.cdr.detectChanges();
       });
     }, 300); // Augmenté de 100 à 300ms
+  }
+
+  trackByBooking(index: number, booking: any): string {
+    return booking._id;
   }
 }

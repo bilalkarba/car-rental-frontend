@@ -1,12 +1,20 @@
 <!-- Hero Section -->
 <section class="hero-section d-flex align-items-center position-relative overflow-hidden">
   <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+  <!-- Optimized Hero Image -->
+  <img ngSrc="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7" 
+       priority 
+       fill 
+       style="object-fit: cover; z-index: -1;" 
+       [loaderParams]="{ 'fm': 'webp', 'q': '80' }"
+       alt="Luxury car rental">
+  
   <div class="container position-relative z-1 text-white">
     <div class="row">
-      <div class="col-lg-8" data-aos="fade-right" data-aos-duration="1000">
+      <div class="col-lg-8">
         <h1 class="display-3 fw-bold mb-4 animate-up text-gradient">{{ 'home.welcome' | translate }}</h1>
-        <p class="lead mb-5 fs-4 opacity-90 animate-up delay-1">{{ 'home.subtitle' | translate }}</p>
-        <div class="d-flex gap-3 animate-up delay-2">
+        <p class="lead mb-5 fs-4 opacity-90 animate-up">{{ 'home.subtitle' | translate }}</p>
+        <div class="d-flex gap-3 animate-up">
           <button class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg hover-scale" routerLink="/cars">
             <i class="fas fa-car me-2"></i> {{ 'navbar.cars' | translate }}
           </button>
@@ -83,7 +91,7 @@
     </div>
 
     <div class="row g-4">
-      <div class="col-md-4" *ngFor="let car of featuredCars">
+      <div class="col-md-4" *ngFor="let car of featuredCars; trackBy: trackByCar">
         <div class="card h-100 border-0 shadow-sm hover-lift overflow-hidden">
           <div class="position-relative">
             <img [src]="car.image" [alt]="car.brand + ' ' + car.model" class="card-img-top" style="height: 250px; object-fit: cover;">

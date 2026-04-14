@@ -4,13 +4,15 @@ import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-register',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, RouterLink],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-
 export class RegisterComponent {
   registerForm: FormGroup;
   isLoading = false;

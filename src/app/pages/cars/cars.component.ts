@@ -3,11 +3,15 @@ import { CarService } from '../../services/car.service';
 import { AgencyService } from '../../services/agency.service';
 import { TranslationService } from '../../services/translation.service';
 import { takeUntil, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { TranslatePipe } from "../../pipes/translate.pipe";
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-cars',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, RouterLink, NgOptimizedImage],
   templateUrl: './cars.component.html',
   styleUrl: './cars.component.scss'
 })
@@ -193,5 +197,9 @@ export class CarsComponent implements OnInit {
       // Scroll to top of grid
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  }
+
+  trackByCar(index: number, car: any): string {
+    return car._id;
   }
 }

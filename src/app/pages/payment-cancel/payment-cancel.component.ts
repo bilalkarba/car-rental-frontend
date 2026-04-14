@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { RouterLink } from '@angular/router';
 import { PaypalService } from '../../services/paypal.service';
 
 @Component({
   selector: 'app-payment-cancel',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, TranslatePipe, RouterLink],
   templateUrl: './payment-cancel.component.html',
   styleUrl: './payment-cancel.component.scss'
 })

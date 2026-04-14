@@ -32,14 +32,16 @@
     </div>
 
     <div class="bookings-grid row g-4" *ngIf="!isLoading && userBookings.length > 0">
-      <div class="col-md-6 col-lg-4 animate-up" *ngFor="let booking of userBookings; let i = index" [style.animation-delay]="(i * 0.1) + 's'">
+      <div class="col-md-6 col-lg-4 animate-up" *ngFor="let booking of userBookings; let i = index; trackBy: trackByBooking" [style.animation-delay]="(i * 0.1) + 's'">
         <div class="card h-100 border-0 shadow-sm hover-lift">
           <div class="position-relative overflow-hidden">
             <ng-container *ngIf="booking.car">
-              <img [src]="booking.car.image || 'assets/images/default-car.jpg'" 
+              <img [ngSrc]="booking.car.image || 'assets/images/default-car.jpg'" 
                    [alt]="booking.car.model" 
+                   width="400" 
+                   height="220" 
                    class="card-img-top" 
-                   style="height: 220px; object-fit: cover;">
+                   style="object-fit: cover;">
               <div class="position-absolute top-0 end-0 m-3">
                 <span class="badge rounded-pill px-3 py-2 fs-6 shadow-sm" 
                       [class.bg-success]="booking.status === 'confirmed'"

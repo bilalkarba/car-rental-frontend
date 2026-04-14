@@ -3,14 +3,14 @@ import { RouterLink } from '@angular/router';
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CarService } from '../../services/car.service';
 import { AuthService } from '../../services/auth.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   standalone: true,
-  imports: [TranslatePipe, RouterLink, CommonModule]
+  imports: [TranslatePipe, RouterLink, CommonModule, NgOptimizedImage]
 })
 export class HomeComponent implements OnInit {
   featuredCars: any[] = [];
@@ -25,5 +25,9 @@ export class HomeComponent implements OnInit {
       // Get first 3 cars for display
       this.featuredCars = cars.slice(0, 3);
     });
+  }
+
+  trackByCar(index: number, car: any): string {
+    return car._id;
   }
 }

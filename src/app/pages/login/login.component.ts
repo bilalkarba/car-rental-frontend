@@ -5,9 +5,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { DOCUMENT } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

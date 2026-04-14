@@ -53,10 +53,10 @@
 
   <!-- Cars Grid -->
   <div class="row g-4" *ngIf="filteredCars.length > 0; else noCars">
-    <div class="col-md-6 col-lg-4 animate-up" *ngFor="let car of paginatedCars; let i = index" [style.animation-delay]="(i * 0.1) + 's'">
+    <div class="col-md-6 col-lg-4 animate-up" *ngFor="let car of paginatedCars; let i = index; trackBy: trackByCar" [style.animation-delay]="(i * 0.1) + 's'">
       <div class="card h-100 border-0 shadow-sm hover-lift overflow-hidden">
         <div class="position-relative">
-          <img [src]="car.image" [alt]="car.model" class="card-img-top" style="height: 250px; object-fit: cover;">
+          <img [ngSrc]="car.image" [alt]="car.model" width="400" height="250" class="card-img-top" style="object-fit: cover;">
           <div class="position-absolute top-0 end-0 m-3">
             <span class="badge bg-primary rounded-pill px-3 py-2 fs-6 shadow-sm">{{ car.pricePerDay }} MAD/jour</span>
           </div>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
+import { TranslatePipe } from "../../pipes/translate.pipe";
 import { PaypalService } from '../../services/paypal.service';
 
 import jsPDF from 'jspdf';
@@ -9,7 +10,9 @@ import html2canvas from 'html2canvas';
 @Component({
   selector: 'app-payment-success',
   templateUrl: './payment-success.component.html',
-  standalone:false,
+  standalone: true,
+  imports: [CommonModule, TranslatePipe],
+  providers: [DatePipe],
   styleUrls: ['./payment-success.component.scss']
 })
 export class PaymentSuccessComponent implements OnInit {

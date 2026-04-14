@@ -13,11 +13,16 @@ interface Notification {
   icon: string;
 }
 
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from "../../../pipes/translate.pipe";
+import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-dashboard-realtime',
+  standalone: true,
+  imports: [CommonModule, TranslatePipe, RouterLink],
   templateUrl: './dashboard-realtime.component.html',
-  styleUrls: ['./dashboard-realtime.component.scss'],
-  standalone: false
+  styleUrls: ['./dashboard-realtime.component.scss']
 })
 export class DashboardRealtimeComponent implements OnInit, OnDestroy {
   private readonly apiUrl = environment.apiUrl;

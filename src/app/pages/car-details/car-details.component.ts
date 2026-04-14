@@ -6,9 +6,14 @@ import { AuthService } from '../../services/auth.service';
 import { PaypalService } from '../../services/paypal.service';
 import { TranslationService } from '../../services/translation.service';
 
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from "../../pipes/translate.pipe";
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-car-details',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, TranslatePipe, FormsModule],
   templateUrl: './car-details.component.html',
   styleUrls: ['./car-details.component.scss'],
 })

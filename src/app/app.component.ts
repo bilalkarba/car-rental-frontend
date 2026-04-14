@@ -7,6 +7,7 @@ import { LanguageStorageService } from './services/language-storage.service';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import AOS from 'aos';
 import { AutoLogoutService } from './services/auto-logout.service';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 
 @Component({
   selector: 'app-root',
@@ -37,6 +38,9 @@ export class AppComponent implements OnInit {
         once: true,
         mirror: false
       });
+
+      // Initialize Vercel Speed Insights
+      injectSpeedInsights();
     }
 
     this.autoLogout.startMonitoring();

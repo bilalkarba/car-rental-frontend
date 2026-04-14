@@ -7,6 +7,7 @@ import { LanguageStorageService } from './services/language-storage.service';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import AOS from 'aos';
 import { AutoLogoutService } from './services/auto-logout.service';
+import { SpeedInsightsService } from './services/speed-insights.service';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +27,7 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private languageStorageService: LanguageStorageService,
     private autoLogout: AutoLogoutService,
+    private speedInsights: SpeedInsightsService,
     @Inject(DOCUMENT) private document: Document,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
@@ -40,6 +42,9 @@ export class AppComponent implements OnInit {
     }
 
     this.autoLogout.startMonitoring();
+    
+    // Initialize Vercel Speed Insights for performance monitoring
+    this.speedInsights.initialize();
 
     // كل مرة تتبدّل اللغة، نحدث العرض مباشرة بلا refresh
     this.translationService.currentLanguage$
